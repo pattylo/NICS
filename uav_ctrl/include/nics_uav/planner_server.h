@@ -55,9 +55,11 @@ private:
     ros::Subscriber uav_pose_sub, fsm_info_sub, ugv_pose_sub;
 
     geometry_msgs::PoseStamped uav_pose;
+    Sophus::SE3d uavPoseSE3;
     inline void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     {
         uav_pose = *msg;
+        uavPoseSE3 = posemsg_to_SE3(uav_pose.pose);
     }
 
     airo_message::FSMInfo fsm_info;
@@ -65,6 +67,15 @@ private:
     {
         fsm_info = *msg;
     }
+
+    geometry_msgs::PoseStamped ugv_pose;
+    Sophus::SE3d ugvPoseSE3;
+    inline void ugvposeCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+    {
+        ugv_pose = *msg;
+        ugvPoseSE3 = posemsg_to_SE3(ugv_pose.pose);
+    }
+    
 
     // publisher
     ros::Publisher command_pub, takeoff_land_pub;
@@ -79,11 +90,14 @@ private:
     void config(ros::NodeHandle& _nh);
     int pub_freq;
     std::vector<geometry_msgs::Point> TRAJECTORY;
+    Eigen::Vector3d global_offset;
 
 // exec_traj
     double last_request = 0;
     double starting_error = 0;
+    Eigen::Vector3d target_pose_Eigen;
     airo_message::ReferenceStamped target_pose;
+
 
     void exec_predefined_traj();
     bool check_start_point();
@@ -92,6 +106,9 @@ private:
 
     void exec_online_traj();
     void check_collision();
+
+// transform w.r.t. UGV
+    Eigen::Vector3d transform_to_non_inertial_frame(geometry_msgs::Point local_pt);
 
 
 public:

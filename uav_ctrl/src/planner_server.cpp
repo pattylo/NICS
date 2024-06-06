@@ -33,6 +33,8 @@ planner_server::planner_server(ros::NodeHandle& _nh)
             ("/mavros/local_position/pose", 1, &planner_server::poseCallback, this);
     fsm_info_sub = nh.subscribe<airo_message::FSMInfo>
             ("/airo_control/fsm_info", 1, &planner_server::fsmInfoCallback, this);
+    ugv_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
+            ("/nics/gh034_car/pose", 1, &planner_server::ugvposeCallback, this);
     
     
     // publish            
@@ -161,6 +163,13 @@ void planner_server::config(ros::NodeHandle& _nh)
 
     TRAJECTORY = uavpath_ptr->get_3Dtraj();
     _nh.getParam("starting_error", starting_error);
+
+    double offset_x, offset_y, offset_z;
+    _nh.getParam("global_offset_x", offset_x);
+    _nh.getParam("global_offset_y", offset_y);
+    _nh.getParam("global_offset_z", offset_z);
+    global_offset = Eigen::Vector3d(offset_x, offset_y, offset_z);
+
 }
 
 void planner_server::mainspinCallback(const ros::TimerEvent &e)
@@ -227,26 +236,18 @@ void planner_server::exec_predefined_traj()
         traj_i ++;            
     }
 
-    std::cout<<TRAJECTORY[traj_i].x<<std::endl;
-    std::cout<<TRAJECTORY[traj_i].y<<std::endl;
-    std::cout<<TRAJECTORY[traj_i].z<<std::endl;
-    std::cout<<std::endl;
+    target_pose_Eigen = transform_to_non_inertial_frame(TRAJECTORY[traj_i]);
+    
+    target_pose_Eigen = target_pose_Eigen - global_offset;
 
-    target_pose.ref.pose.position.x = TRAJECTORY[traj_i].x;
-    target_pose.ref.pose.position.y = TRAJECTORY[traj_i].y;
-    target_pose.ref.pose.position.z = TRAJECTORY[traj_i].z;
+    target_pose.ref.pose.position.x = target_pose_Eigen.x();
+    target_pose.ref.pose.position.y = target_pose_Eigen.y();
+    target_pose.ref.pose.position.z = target_pose_Eigen.z();
 
 }
 
 bool planner_server::check_start_point()
-{
-
-    std::cout<<sqrt(
-            abs(uav_pose.pose.position.x - TRAJECTORY[0].x)
-            + abs(uav_pose.pose.position.y - TRAJECTORY[0].y)
-            + abs(uav_pose.pose.position.z - TRAJECTORY[0].z)
-        )<<std::endl;
-    
+{    
     if(
         sqrt(
             abs(uav_pose.pose.position.x - TRAJECTORY[0].x)
@@ -270,4 +271,30 @@ void planner_server::exec_online_traj()
 void planner_server::check_collision()
 {
 
+}
+
+Eigen::Vector3d planner_server::transform_to_non_inertial_frame(
+    geometry_msgs::Point local_pt_b
+)
+{
+    std::cout<< SO3_rotate_vector(
+        ugvPoseSE3.so3(), 
+        Eigen::Vector3d(
+            local_pt_b.x,
+            local_pt_b.y,
+            local_pt_b.z
+        )
+    )<<std::endl<<std::endl;
+    std::cout<<ugvPoseSE3.translation()<<std::endl<<std::endl;
+
+    std::cout<<"-================"<<std::endl;
+
+    return SO3_rotate_vector(
+        ugvPoseSE3.so3(), 
+        Eigen::Vector3d(
+            local_pt_b.x,
+            local_pt_b.y,
+            local_pt_b.z
+        )
+    ) + ugvPoseSE3.translation();
 }

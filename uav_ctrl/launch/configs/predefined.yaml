@@ -11,7 +11,7 @@ z0: 1.2
 
 # misc
 pub_freq: 100
-lap_no: 4
+lap_no: 40
 ccw: true
 
 # z move or not
@@ -36,3 +36,7 @@ timePerLap: 2.0
 
 
 starting_error: 2.0
+
+global_offset_x: 4
+global_offset_y: 0
+global_offset_z: 0

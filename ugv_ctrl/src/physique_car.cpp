@@ -196,7 +196,6 @@ void physique_car_state_callback_impl(const T& msg, std::false_type)
 template <typename T>
 void physique_car_state_callback(const T& msg)
 {
-    // std::cout<<std::is_same<T, gazebo_msgs::ModelStates::ConstPtr>()<<std::endl;
     physique_car_state_callback_impl(msg, std::is_same<T, gazebo_msgs::ModelStates::ConstPtr>());        
 }
 
@@ -510,7 +509,7 @@ int main(int argc, char** argv)
         radius,
         pub_freq,
         ang_vel,
-        100,
+        10000,
         ccw
     );
 
