@@ -35,4 +35,4 @@ lemi_velo: 60.0 # dg/s
 timePerLap: 2.0
 
 
-starting_error: 0.8
+starting_error: 2.0

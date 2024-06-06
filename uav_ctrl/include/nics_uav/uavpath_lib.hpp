@@ -26,7 +26,7 @@
 #ifndef UAVPATH_LIB_H
 #define UAVPATH_LIB_H
 
-#include "essential.h"
+#include <ros_utilities/ros_utilities.h>
 
 #define CIRCLE_TRAJ "CIRCLE_TRAJ"
 #define BLOCK_TRAJ "BLOCK_TRAJ"

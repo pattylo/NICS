@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(uav_path)
+project(nics_uav)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -20,6 +20,7 @@ find_package(catkin COMPONENTS
   message_generation
   genmsg
   visualization_msgs
+  ros_utilities
 )
 
 find_package(Eigen3 REQUIRED)
@@ -37,7 +38,7 @@ add_message_files(
 generate_messages(DEPENDENCIES std_msgs sensor_msgs)
 
 catkin_package(
-  #  INCLUDE_DIRS include
+  INCLUDE_DIRS include
   CATKIN_DEPENDS 
   geometry_msgs 
   mavros_msgs 
@@ -50,20 +51,21 @@ set(Sophus_LIBRARIES libSophus.so)
 
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
   ${Sophus_INCLUDE_DIRS}
+  ros_utilities
 )
 
-# add_executable(planner_node
-#   src/planner_node.cpp
-#   src/planner_server.cpp
-# )
+add_executable(planner_node
+  src/planner_node.cpp
+  src/planner_server.cpp
+)
 
-# target_link_libraries(planner_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(planner_node
+  ${catkin_LIBRARIES}
+)
 
-# add_dependencies(planner_node
-#     airo_message_generate_messages_cpp
-#   )
+add_dependencies(planner_node
+    airo_message_generate_messages_cpp
+  )

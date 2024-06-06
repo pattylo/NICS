@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>uav_path</name>
+  <name>nics_uav</name>
   <version>0.0.0</version>
   <description>The nics package</description>
 

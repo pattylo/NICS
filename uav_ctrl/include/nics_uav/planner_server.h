@@ -26,17 +26,18 @@
 #ifndef PLANNER_SERVER_H
 #define PLANNER_SERVER_H
 
-#include "essential.h"
+#include <ros_utilities/ros_utilities.h>
 
 #include "airo_message/FSMInfo.h"
 #include "airo_message/TakeoffLandTrigger.h"
 #include "airo_message/Reference.h"
+#include "airo_message/ReferenceStamped.h"
 
 #include "uavpath_lib.hpp"
 
 // #define REPLAN "IDLE"
 
-class planner_server
+class planner_server : private RosUtilities
 {
     enum State{
         TAKEOFF,
@@ -51,7 +52,7 @@ private:
 
 //ros related
     // subscriber
-    ros::Subscriber uav_pose_sub, fsm_info_sub;
+    ros::Subscriber uav_pose_sub, fsm_info_sub, ugv_pose_sub;
 
     geometry_msgs::PoseStamped uav_pose;
     inline void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -73,26 +74,6 @@ private:
     ros::Timer mainspin_timer;
     void mainspinCallback(const ros::TimerEvent &e);
 
-//rotation function
-    Eigen::Vector3d q2rpy(Eigen::Quaterniond q) {
-        return q.toRotationMatrix().eulerAngles(1,0,2);
-    };
-
-    Eigen::Quaterniond rpy2q(Eigen::Vector3d rpy){
-        Eigen::AngleAxisd rollAngle(rpy(0), Eigen::Vector3d::UnitX());
-        Eigen::AngleAxisd pitchAngle(rpy(1), Eigen::Vector3d::UnitY());
-        Eigen::AngleAxisd yawAngle(rpy(2), Eigen::Vector3d::UnitZ());
-
-        Eigen::Quaterniond q = yawAngle * pitchAngle * rollAngle;
-
-        return q;
-
-    };
-
-    Eigen::Vector3d q_rotate_vector(Eigen::Quaterniond q, Eigen::Vector3d v){
-        return q * v;
-    }
-
 // config
     bool traj_predefined = false;
     void config(ros::NodeHandle& _nh);
@@ -102,7 +83,7 @@ private:
 // exec_traj
     double last_request = 0;
     double starting_error = 0;
-    airo_message::Reference target_pose;
+    airo_message::ReferenceStamped target_pose;
 
     void exec_predefined_traj();
     bool check_start_point();

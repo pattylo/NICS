@@ -6,6 +6,10 @@
         <param name="/pub_freq" type="int" value="50"/>
         <param name="/environs" type="string" value="GAZEBO"/>
 
+        <!-- traj type -->
+        <param name="/traj_type" type="int" value="0"/>
+            <!-- 0 for circle, 1 for traj -->
+
         <!-- static -->
         <param name="/static_ornot" type="bool" value="false"/>
 
@@ -15,6 +19,7 @@
         <param name="/radius" type="double" value="1.2"/>
         <param name="/center_x" type="double" value="0.0"/>
         <param name="/center_y" type="double" value="0.36"/>
+        <param name="/ccw" type="bool" value="true"/>
 
         <!-- straight_traj -->
         <param name="/starto_x" type="double" value="2.0"/>
@@ -24,6 +29,6 @@
         <param name="/straight_vel" type="double" value="4.0"/>
         <param name="/straight_repeat" type="bool" value="true"/>
         <param name="/straight_repeat_time" type="int" value="100"/>
-        <param name="/yaw_control" type="bool" value="true"/>
+        
     </node>
 </launch>

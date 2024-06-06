@@ -7,12 +7,9 @@
       },
       "includePath": [
         "/home/patty/rse_ws/devel/include/**",
-        "/home/patty/ledvo_ws/devel/include/**",
-        "/home/patty/camera_ws/devel/include/**",
+        "/home/patty/rse_ws/src/NICS/ros_utilities/**",
+        "/home/patty/rse_ws/src/NICS/uav_ctrl/include/**",
         "/opt/ros/noetic/include/**",
-        "/home/patty/ledvo_ws/src/ledvo/cv_bridge/include/**",
-        "/home/patty/camera_ws/src/realsense-ros/realsense2_camera/include/**",
-        "/home/patty/ledvo_ws/src/ledvo/vdo/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

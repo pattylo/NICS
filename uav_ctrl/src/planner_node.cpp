@@ -20,10 +20,10 @@
  * \date 26/10/2023
  * \author pattylo
  * \copyright (c) AIRO-LAB, RCUAS of Hong Kong Polytechnic University
- * \brief classes for uav_path using airo_control_interface
+ * \brief classes for nics_uav using airo_control_interface
  */
 
-#include "include/planner_server.h"
+#include "nics_uav/planner_server.h"
 
 int main(int argc, char **argv)
 {

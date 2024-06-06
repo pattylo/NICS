@@ -20,10 +20,10 @@
  * \date 26/10/2023
  * \author pattylo
  * \copyright (c) AIRO-LAB, RCUAS of Hong Kong Polytechnic University
- * \brief classes for uav_path using airo_control_interface
+ * \brief classes for nics_uav using airo_control_interface
  */
 
-#include "include/planner_server.h"
+#include "nics_uav/planner_server.h"
 
 planner_server::planner_server(ros::NodeHandle& _nh)
 : nh(_nh)
@@ -34,8 +34,9 @@ planner_server::planner_server(ros::NodeHandle& _nh)
     fsm_info_sub = nh.subscribe<airo_message::FSMInfo>
             ("/airo_control/fsm_info", 1, &planner_server::fsmInfoCallback, this);
     
+    
     // publish            
-    command_pub = nh.advertise<airo_message::Reference>
+    command_pub = nh.advertise<airo_message::ReferenceStamped>
             ("/airo_control/setpoint",1, true);
     takeoff_land_pub = nh.advertise<airo_message::TakeoffLandTrigger>
             ("/airo_control/takeoff_land_trigger",1, true);
@@ -46,7 +47,6 @@ planner_server::planner_server(ros::NodeHandle& _nh)
     if(traj_predefined)
         config(nh);
     
-
     // timer
     mainspin_timer = nh.createTimer(
         ros::Duration(1.0 / pub_freq),
@@ -227,14 +227,25 @@ void planner_server::exec_predefined_traj()
         traj_i ++;            
     }
 
-    target_pose.ref_pose.position.x = TRAJECTORY[traj_i].x;
-    target_pose.ref_pose.position.y = TRAJECTORY[traj_i].y;
-    target_pose.ref_pose.position.z = TRAJECTORY[traj_i].z;
+    std::cout<<TRAJECTORY[traj_i].x<<std::endl;
+    std::cout<<TRAJECTORY[traj_i].y<<std::endl;
+    std::cout<<TRAJECTORY[traj_i].z<<std::endl;
+    std::cout<<std::endl;
+
+    target_pose.ref.pose.position.x = TRAJECTORY[traj_i].x;
+    target_pose.ref.pose.position.y = TRAJECTORY[traj_i].y;
+    target_pose.ref.pose.position.z = TRAJECTORY[traj_i].z;
 
 }
 
 bool planner_server::check_start_point()
 {
+
+    std::cout<<sqrt(
+            abs(uav_pose.pose.position.x - TRAJECTORY[0].x)
+            + abs(uav_pose.pose.position.y - TRAJECTORY[0].y)
+            + abs(uav_pose.pose.position.z - TRAJECTORY[0].z)
+        )<<std::endl;
     
     if(
         sqrt(
@@ -246,8 +257,7 @@ bool planner_server::check_start_point()
     {
         ROS_GREEN_STREAM("START TRAJ!");
         return true;
-    }
-        
+    }        
     else
         return false;
 }

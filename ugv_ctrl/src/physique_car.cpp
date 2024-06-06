@@ -72,6 +72,8 @@ static double straight_vel;
 static bool straight_repeat;
 static int straight_repeat_time;
 static bool yaw_control;
+static int traj_type;
+static bool ccw;
 
 static std::string GAZEBO_ = "GAZEBO";
 
@@ -426,6 +428,7 @@ int main(int argc, char** argv)
     nh.getParam("/physique_car/radius", radius);
     nh.getParam("/physique_car/center_x", center_x);
     nh.getParam("/physique_car/center_y", center_y);
+    nh.getParam("/physique_car/ccw", ccw);
 
     nh.getParam("/physique_car/starto_x", starto_x);
     nh.getParam("/physique_car/starto_y", starto_y);
@@ -434,10 +437,13 @@ int main(int argc, char** argv)
     nh.getParam("/physique_car/straight_vel", straight_vel);
     nh.getParam("/physique_car/straight_repeat", straight_repeat);
     nh.getParam("/physique_car/straight_repeat_time", straight_repeat_time);
-    nh.getParam("/physique_car/yaw_control", yaw_control);
+    nh.getParam("/physique_car/traj_type", traj_type);
+    
 
-
-
+    if(traj_type == 1)
+        yaw_control = true;
+    else 
+        yaw_control = false;
 
     nh.getParam("/physique_car/environs", environs);
     
@@ -505,8 +511,10 @@ int main(int argc, char** argv)
         pub_freq,
         ang_vel,
         100,
-        true
+        ccw
     );
+
+    
 
     // ugv::ugvpath block_traj(
     //     center,
@@ -566,8 +574,19 @@ int main(int argc, char** argv)
         physique_car_twist_pub.publish(physique_car_twist);
         physique_car_imu_pub.publish(physique_car_imu);
 
-        target_posi = straight_traj.get_traj_straight_wp(physique_car_state_xyyaw, traj_i);
-        target_posi = circle_traj.get_traj_wp(traj_i);
+        switch (traj_type)
+        {
+        case 0:
+            target_posi = circle_traj.get_traj_wp(traj_i);
+            break;
+        case 1:
+            target_posi = straight_traj.get_traj_straight_wp(physique_car_state_xyyaw, traj_i);
+        default:
+            // ros::shutdown("CHECK TRA");
+            break;
+        }
+        
+        
 
         // target_posi = Eigen::Vector2d(0,0);
         std::cout<<target_posi<<std::endl<<std::endl<<std::endl;
