@@ -34,7 +34,7 @@ planner_server::planner_server(ros::NodeHandle& _nh)
     fsm_info_sub = nh.subscribe<airo_message::FSMInfo>
             ("/airo_control/fsm_info", 1, &planner_server::fsmInfoCallback, this);
     ugv_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
-            ("/nics/gh034_car/pose", 1, &planner_server::ugvposeCallback, this);
+            ("/vrpn_client_node/gh034_car/pose", 1, &planner_server::ugvposeCallback, this);
     
     
     // publish            
@@ -236,9 +236,14 @@ void planner_server::exec_predefined_traj()
         traj_i ++;            
     }
 
+    std::cout<<"here"<<std::endl;
+    std::cout<<TRAJECTORY[traj_i]<<std::endl;
+    std::cout<<std::endl<<std::endl;;
+
     target_pose_Eigen = transform_to_non_inertial_frame(TRAJECTORY[traj_i]);
     
-    target_pose_Eigen = target_pose_Eigen - global_offset;
+    target_pose_Eigen = target_pose_Eigen;
+
 
     target_pose.ref.pose.position.x = target_pose_Eigen.x();
     target_pose.ref.pose.position.y = target_pose_Eigen.y();
@@ -277,18 +282,6 @@ Eigen::Vector3d planner_server::transform_to_non_inertial_frame(
     geometry_msgs::Point local_pt_b
 )
 {
-    std::cout<< SO3_rotate_vector(
-        ugvPoseSE3.so3(), 
-        Eigen::Vector3d(
-            local_pt_b.x,
-            local_pt_b.y,
-            local_pt_b.z
-        )
-    )<<std::endl<<std::endl;
-    std::cout<<ugvPoseSE3.translation()<<std::endl<<std::endl;
-
-    std::cout<<"-================"<<std::endl;
-
     return SO3_rotate_vector(
         ugvPoseSE3.so3(), 
         Eigen::Vector3d(

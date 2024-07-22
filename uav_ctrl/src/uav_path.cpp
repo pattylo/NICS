@@ -78,9 +78,6 @@ int main(int argc, char **argv)
 
     int circle_step_i = 0;
 
-
-
-
     while(ros::ok()){
         switch(state){
             case TAKEOFF:{

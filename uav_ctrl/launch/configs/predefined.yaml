@@ -2,11 +2,11 @@
 predefined: true
 
 # trajtype
-TrajType: LEMNISCATE_TRAJ # CIRCLE_TRAJ, BLOCK_TRAJ, LEMNISCATE_TRAJ
+TrajType: CIRCLE_TRAJ # CIRCLE_TRAJ, BLOCK_TRAJ, LEMNISCATE_TRAJ
 
 # center
 x0: 0.0
-y0: 0.4
+y0: 0.2
 z0: 1.2
 
 # misc
@@ -15,13 +15,13 @@ lap_no: 40
 ccw: true
 
 # z move or not
-z_moving: false
-z_moving_amp: 0.4
+z_moving: true
+z_moving_amp: 0.14
 z_moving_perioud: 7.5
 
 # circle
-circle_velo: 12.0 # dg/s
-circle_radius: 1.6
+circle_velo: 48.0 # dg/s
+circle_radius: 0.24
 
 # block
 block_velo: 0.4 # m/s
@@ -37,6 +37,6 @@ timePerLap: 2.0
 
 starting_error: 2.0
 
-global_offset_x: 4
-global_offset_y: 0
-global_offset_z: 0
+global_offset_x: 0.0
+global_offset_y: 0.0
+global_offset_z: 0.0
