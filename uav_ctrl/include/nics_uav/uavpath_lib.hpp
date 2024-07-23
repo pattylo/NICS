@@ -31,6 +31,7 @@
 #define CIRCLE_TRAJ "CIRCLE_TRAJ"
 #define BLOCK_TRAJ "BLOCK_TRAJ"
 #define LEMNISCATE_TRAJ "LEMNISCATE_TRAJ"
+#define HOVER "HOVER"
 
 namespace uav
 {

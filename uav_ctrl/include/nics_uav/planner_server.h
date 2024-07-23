@@ -96,9 +96,11 @@ private:
     double last_request = 0;
     double starting_error = 0;
     Eigen::Vector3d target_pose_Eigen;
+    geometry_msgs::Point hover_pt;
     airo_message::ReferenceStamped target_pose;
+    bool wehover;
 
-
+    void hover();
     void exec_predefined_traj();
     bool check_start_point();
     bool can_start = false;

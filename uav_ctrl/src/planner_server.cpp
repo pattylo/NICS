@@ -160,6 +160,13 @@ void planner_server::config(ros::NodeHandle& _nh)
             LEMNISCATE_TRAJ
         );
     }
+    else if (TrajType == HOVER)
+    {
+        wehover = true;
+        hover_pt.x = center.x();
+        hover_pt.y = center.y();
+        hover_pt.z = center.z();
+    }
 
     TRAJECTORY = uavpath_ptr->get_3Dtraj();
     _nh.getParam("starting_error", starting_error);
@@ -196,6 +203,12 @@ void planner_server::mainspinCallback(const ros::TimerEvent &e)
                     fsm_info.is_waiting_for_command
                 )
                 {
+                    if(wehover)
+                    {
+                        hover();
+                        return;
+                    }
+                    
                     if(traj_predefined)
                         exec_predefined_traj();
                     else
@@ -223,6 +236,19 @@ void planner_server::mainspinCallback(const ros::TimerEvent &e)
                 break;
             }
         }
+}
+
+void planner_server::hover()
+{
+
+    target_pose_Eigen = transform_to_non_inertial_frame(
+        hover_pt
+    );
+
+    target_pose.ref.pose.position.x = target_pose_Eigen.x();
+    target_pose.ref.pose.position.y = target_pose_Eigen.y();
+    target_pose.ref.pose.position.z = target_pose_Eigen.z();
+
 }
 
 void planner_server::exec_predefined_traj()

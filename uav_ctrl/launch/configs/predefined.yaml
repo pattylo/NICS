@@ -2,7 +2,8 @@
 predefined: true
 
 # trajtype
-TrajType: CIRCLE_TRAJ # CIRCLE_TRAJ, BLOCK_TRAJ, LEMNISCATE_TRAJ
+TrajType: HOVER 
+# CIRCLE_TRAJ, BLOCK_TRAJ, LEMNISCATE_TRAJ, HOVER
 
 # center
 x0: 0.0
