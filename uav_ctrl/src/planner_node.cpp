@@ -30,6 +30,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "planner_node");
     ros::NodeHandle nh("~");
 
+    std::cout<<"hi"<<std::endl;
+
     planner_server planner_server(nh);
     
     ros::spin();

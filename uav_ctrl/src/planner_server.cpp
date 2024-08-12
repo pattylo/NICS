@@ -162,19 +162,24 @@ void planner_server::config(ros::NodeHandle& _nh)
     }
     else if (TrajType == HOVER)
     {
+        
         wehover = true;
         hover_pt.x = center.x();
         hover_pt.y = center.y();
         hover_pt.z = center.z();
     }
+    
+    if(TrajType != HOVER)
+        TRAJECTORY = uavpath_ptr->get_3Dtraj();
+    
 
-    TRAJECTORY = uavpath_ptr->get_3Dtraj();
     _nh.getParam("starting_error", starting_error);
 
     double offset_x, offset_y, offset_z;
     _nh.getParam("global_offset_x", offset_x);
     _nh.getParam("global_offset_y", offset_y);
     _nh.getParam("global_offset_z", offset_z);
+    
     global_offset = Eigen::Vector3d(offset_x, offset_y, offset_z);
 
 }
@@ -205,15 +210,16 @@ void planner_server::mainspinCallback(const ros::TimerEvent &e)
                 {
                     if(wehover)
                     {
-                        hover();
-                        return;
+                        hover();                    
+                    }
+                    else
+                    {
+                        if(traj_predefined)
+                            exec_predefined_traj();
+                        else
+                            exec_online_traj();
                     }
                     
-                    if(traj_predefined)
-                        exec_predefined_traj();
-                    else
-                        exec_online_traj();
-
                     target_pose.header.stamp = ros::Time::now();
                     command_pub.publish(target_pose);
 
@@ -244,6 +250,8 @@ void planner_server::hover()
     target_pose_Eigen = transform_to_non_inertial_frame(
         hover_pt
     );
+
+    std::cout<<target_pose_Eigen<<std::endl;
 
     target_pose.ref.pose.position.x = target_pose_Eigen.x();
     target_pose.ref.pose.position.y = target_pose_Eigen.y();

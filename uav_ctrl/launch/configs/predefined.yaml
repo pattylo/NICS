@@ -2,17 +2,17 @@
 predefined: true
 
 # trajtype
-TrajType: HOVER 
+TrajType: CIRCLE_TRAJ
 # CIRCLE_TRAJ, BLOCK_TRAJ, LEMNISCATE_TRAJ, HOVER
 
 # center
-x0: 0.0
-y0: 0.2
-z0: 1.2
+x0: 0.1
+y0: 0.1
+z0: 0.8
 
 # misc
 pub_freq: 100
-lap_no: 40
+lap_no: 400
 ccw: true
 
 # z move or not
