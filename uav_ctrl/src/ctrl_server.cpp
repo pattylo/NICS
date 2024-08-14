@@ -548,7 +548,7 @@ Eigen::Vector4d ctrl_server::acc_to_U(
 
     Umsg(0) = asin(std::min(
         std::max(
-            // 1.0 / desired_acc.z() * 
+            1.0 / (desired_acc.z() + g) * 
             (
                 desired_acc.x() * sin(desired_yaw) - desired_acc.y() * cos(desired_yaw) 
             ),
@@ -559,7 +559,7 @@ Eigen::Vector4d ctrl_server::acc_to_U(
     
     Umsg(1) = asin(std::min(
         std::max(
-                // 1.0 / desired_acc.z() * 
+                1.0 / (desired_acc.z() + g) * 
                 (
                     desired_acc.x() * cos(desired_yaw) + desired_acc.y() * sin(desired_yaw) 
                 ) / cos(Umsg(0))
