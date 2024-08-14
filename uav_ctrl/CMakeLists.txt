@@ -32,6 +32,7 @@ roslaunch_add_file_check(launch)
 
 add_message_files(
   FILES
+  fsm.msg
   nics_ugv_blank.msg
 )
 
@@ -70,3 +71,25 @@ target_link_libraries(planner_node
 add_dependencies(planner_node
     airo_message_generate_messages_cpp
   )
+
+  add_executable(ctrl_node
+  src/ctrl_node.cpp
+  src/ctrl_server.cpp
+)
+
+target_link_libraries(ctrl_node
+  ${catkin_LIBRARIES}
+)
+
+add_dependencies(ctrl_node
+    airo_message_generate_messages_cpp
+  )
+
+
+  add_executable(offb
+  src/offb.cpp
+)
+
+target_link_libraries(offb
+  ${catkin_LIBRARIES}
+)

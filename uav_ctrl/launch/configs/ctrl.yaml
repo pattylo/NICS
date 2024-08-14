@@ -1,0 +1,32 @@
+PID_gain:
+#kp
+  - x: 1.0
+    y: 1.0
+    z: 1.0
+    yaw: 0.0
+#ki
+  - x: 0.0
+    y: 0.0
+    z: 0.0
+    yaw: 0.00
+#kd
+  - x: 0.5
+    y: 0.5
+    z: 0.65
+    yaw: 0.0
+
+FF_gain:
+#ff
+  - x: 1.0
+    y: 1.0
+    z: 1.0
+
+v_max: 1.0
+
+meetup_thres: 0.05
+take_off_x: 1.0
+take_off_y: 1.0
+take_off_z: 1.0
+
+hover_thrust: 0.5656
+pub_freq: 50

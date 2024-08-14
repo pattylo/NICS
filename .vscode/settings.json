@@ -11,6 +11,7 @@
     "/home/patty/camera_ws/devel/lib/python3/dist-packages",
     "/opt/ros/noetic/lib/python3/dist-packages"
   ],
+  "editor.indentSize": "tabSize",
   "editor.wordWrap": "off",
   "files.associations": {
     "cmath": "cpp",

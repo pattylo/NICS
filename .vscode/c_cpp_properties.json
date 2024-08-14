@@ -6,12 +6,12 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/root/nics_ws/devel/include/**",
-        "/root/nics_ws/src/NICS/ros_utilities/include/**",
-        "/root/nics_ws/src/NICS/uav_ctrl/include/**",
+        "/home/patty/rse_ws/devel/include/**",
+        "/home/patty/rse_ws/src/NICS/ros_utilities/include/**",
+        "/home/patty/rse_ws/src/NICS/uav_ctrl/include/**",
         "/opt/ros/noetic/include/**",
         "/usr/include/**",
-        "/root/nics_ws/src/NICS/uav_ctrl/include/**"
+        "/home/patty/rse_ws/src/NICS/uav_ctrl/include/**"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",
