@@ -43,7 +43,7 @@
 #define SHUTDOWN "SHUTDOWN"
 #define MISSION_COMPLETE "MISSION_COMPLETE"
 
-class ctrl_server : private RosUtilities
+class ctrl_server : private rosUtilities
 {
 
 private:

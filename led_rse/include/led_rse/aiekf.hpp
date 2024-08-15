@@ -26,7 +26,7 @@
 #ifndef AIEKF_HPP
 #define AIEKF_HPP
 
-// #include <ros_utilities/ros_utilities.h>
+#include <ros_utilities/ros_utilities.h>
 #include "essential.h"
 #include "cameraModel.hpp"
 #include <sophus/se3.hpp>
@@ -89,16 +89,16 @@ namespace kf
         std::vector<Eigen::MatrixXd> info_matrix;
         
         /* ================ set Predict ================ */
-        void setPredict(); // set_XcurrentDynamicPriori
-        Eigen::VectorXd dfx();
+        inline void setPredict(); // set_XcurrentDynamicPriori
+        inline Eigen::VectorXd dfx();
 
         /* ================ set Measurement ================ */
-        void setMeasurement(Sophus::SE3d initial_pose);
-        void setMeasurement(
+        inline void setMeasurement(Sophus::SE3d initial_pose);
+        inline void setMeasurement(
             std::vector<Eigen::Vector3d>& pts_on_body_frame_in_corres_order,
             std::vector<Eigen::Vector2d>& pts_detected_in_corres_order
         );
-        void calculatePtsAverage();
+        inline void calculatePtsAverage();
 
         // for velo
         bool IIR_track = false;
@@ -106,59 +106,59 @@ namespace kf
         Eigen::Vector3d previous_velo;
 
         /* ================ set PreOptimize ================ */
-        void setPreOptimize();
+        inline void setPreOptimize();
 
         /* ================ NLS Optimization ================ */
-        void doOptimize();
-        virtual void setGNBlocks(
+        inline void doOptimize();
+        inline void setGNBlocks(
             STATE X_var,
             Eigen::MatrixXd& JPJt, 
             Eigen::VectorXd& nJtPf,
             std::vector<Eigen::MatrixXd> Ps
         );
-        void setDFJacobianDynamic(
+        inline void setDFJacobianDynamic(
             Eigen::MatrixXd& Jacob, 
             STATE X_var,
             bool optimize
         );
-        void setDHJacobianCamera(
+        inline void setDHJacobianCamera(
             Eigen::MatrixXd& Jacob, 
             STATE X_var, 
             Eigen::Vector3d pts_3d
         ); // for pose based on cameramodel
-        void setDHJacobianCamera(
+        inline void setDHJacobianCamera(
             Eigen::MatrixXd& Jacob
         ); // for velo based on inferred value
 
-        Eigen::VectorXd getCameraPoseResidual(
+        inline Eigen::VectorXd getCameraPoseResidual(
             STATE X_var,
             Eigen::Vector2d pt_2d_detected,
             Eigen::Vector3d pt_3d_exist
         );
-        Eigen::VectorXd getCameraVeloResidual(
+        inline Eigen::VectorXd getCameraVeloResidual(
             STATE X_var
         );
-        Eigen::VectorXd getDynamicResidual(STATE pose_priori, STATE pose);
-        double getCost(STATE X);
+        inline Eigen::VectorXd getDynamicResidual(STATE pose_priori, STATE pose);
+        inline double getCost(STATE X);
 
         /* ================ set PostOptimize ================ */
-        void setPostOptimize();
-        void setDHJacobianMeasurement(
+        inline void setPostOptimize();
+        inline void setDHJacobianMeasurement(
             Eigen::MatrixXd& Jacob, 
             STATE X_var, 
             Eigen::Vector3d pts_3d
         ); // final jacobian for propagation
-        void setKalmanGain();
-        void setPosterioriCovariance();
-        void setMisc();
-        void setAdaptiveQ();
-        void setAdaptiveR();        
+        inline void setKalmanGain();
+        inline void setPosterioriCovariance();
+        inline void setMisc();
+        inline void setAdaptiveQ();
+        inline void setAdaptiveR();        
 
         /* ================ utilities here ================ */
         int veloMeasureIndi = 0;
         double deltaT = 0;
         Eigen::Vector3d gravity = {0,0,-9.81};
-        Eigen::Matrix3d skewSymmetricMatrix(const Eigen::Vector3d w);
+        inline Eigen::Matrix3d skewSymmetricMatrix(const Eigen::Vector3d w);
         std::default_random_engine generator;
         std::normal_distribution<double> dist;
 
@@ -170,9 +170,9 @@ namespace kf
         STATE XcurrentPosterori;      // X @ k
 
         /* ================ main flow ================ */
-        void initKF(Sophus::SE3d pose_initial_sophus);
-        void reinitKF(Sophus::SE3d pose_reinitial_sophus);
-        void run_AIEKF(
+        inline void initKF(Sophus::SE3d pose_initial_sophus);
+        inline void reinitKF(Sophus::SE3d pose_reinitial_sophus);
+        inline void run_AIEKF(
             double deltaT_,
             std::vector<Eigen::Vector3d>& pts_on_body_frame_in_corres_order,
             std::vector<Eigen::Vector2d>& pts_detected_in_corres_order

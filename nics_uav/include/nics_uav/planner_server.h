@@ -37,7 +37,7 @@
 
 // #define REPLAN "IDLE"
 
-class planner_server : private RosUtilities
+class planner_server : private rosUtilities
 {
     enum State{
         TAKEOFF,

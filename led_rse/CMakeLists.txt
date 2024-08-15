@@ -59,8 +59,12 @@ include_directories(
 )
 
 add_library(nics
-  src/vdrse.cpp
-  src/RosTopicConfigs.cpp
+  src/vdrse_nodelet.cpp
+  src/com.cpp
+  src/config.cpp
+  src/feature.cpp
+  src/main_process.cpp
+  src/vdrse_lib.cpp
   )
 
 ## Specify libraries to link a library or executable target against
