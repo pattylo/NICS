@@ -422,10 +422,6 @@ Eigen::Vector4d ctrl_server::pidff_controller(
 
 void ctrl_server::ctrl_pub()
 {
-    // std::cout<<"hi here in ctrl"<<std::endl;
-    // std::cout<<uav_traj_pose<<std::endl<<std::endl;;
-    // std::cout<<target_traj_pose<<std::endl<<std::endl;;
-
     final_U = acc_to_U(
         pid_controller(
             uav_traj_pose,
@@ -434,7 +430,6 @@ void ctrl_server::ctrl_pub()
         target_traj_pose(3)
     );
 
-    std::cout<<final_U<<std::endl<<std::endl;
     for(int i = 0; i < final_U.size();i++)
     {
         if(std::isnan(final_U(i)) && counter != 0 )
@@ -453,18 +448,11 @@ void ctrl_server::ctrl_pub()
     ctrlU_msg.thrust = final_U(3);
 
     ctrlU_pub.publish(ctrlU_msg);
-    geometry_msgs::PoseStamped temp;
-    temp.pose.position.x = target_traj_pose.x();
-    temp.pose.position.y = target_traj_pose.y();
-    temp.pose.position.z = target_traj_pose.z();
-
-    // pose_pub.publish(temp);
 }
 
 bool ctrl_server::get_ready()
 {
     bool return_state = false;
-    // std::cout<<(ros::Time::now().toSec() - last_request)<<std::endl;
 
     if( uav_current_state.mode != "OFFBOARD" &&
             (ros::Time::now().toSec() - last_request > ros::Duration(2.0).toSec()))
@@ -481,7 +469,6 @@ bool ctrl_server::get_ready()
         if( !uav_current_state.armed &&
             (ros::Time::now().toSec() - last_request > ros::Duration(2.0).toSec()))
         {
-            std::cout<<"hi????"<<std::endl;
             if( uav_arming_client.call(arm_cmd) &&
                 arm_cmd.response.success)
             {
@@ -500,12 +487,10 @@ bool ctrl_server::get_ready()
         return true;
     else
         return false;
-
 }
 
 bool ctrl_server::taking_off()
 {
-    
     double dis = 
         std::pow(
             uavPoseSE3.translation().x() - uav_takeoff_pose.x(),
@@ -521,10 +506,7 @@ bool ctrl_server::taking_off()
         );
     
     dis = std::sqrt(dis);
-    // std::cout<<dis<<std::endl;
 
-
-    return false;
     if(dis < meetup_thres)
         return true;
     else    
@@ -540,8 +522,8 @@ Eigen::Vector4d ctrl_server::acc_to_U(
     // desired roll, pitch, yaw, thrust
 
     Umsg(3) = desired_acc.z() / g * hover_thrust + g / g * hover_thrust;
-    std::cout<<"HERE IS THE DESIRED ACC!!"<<std::endl;
-    std::cout<<desired_acc<<std::endl<<std::endl;
+    // std::cout<<"HERE IS THE DESIRED ACC!!"<<std::endl;
+    // std::cout<<desired_acc<<std::endl<<std::endl;
     // std::cout<<1.0 / desired_acc.z() * (
     //     desired_acc.x() * sin(desired_yaw) - desired_acc.y() * cos(desired_yaw) 
     // )<<std::endl;
@@ -575,8 +557,8 @@ Eigen::Vector4d ctrl_server::acc_to_U(
     if(abs(Umsg(0)) > M_PI/6 || abs(Umsg(1)) > M_PI/6)
         patty::Debug("TO LARGE");
 
-    std::cout<<Umsg(0)<<std::endl;
-    std::cout<<Umsg(1)<<std::endl<<std::endl;;
+    // std::cout<<Umsg(0)<<std::endl;
+    // std::cout<<Umsg(1)<<std::endl<<std::endl;;
 
     Umsg(2) = desired_yaw;
     

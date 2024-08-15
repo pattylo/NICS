@@ -8,10 +8,10 @@
       "includePath": [
         "/home/patty/rse_ws/devel/include/**",
         "/home/patty/rse_ws/src/NICS/ros_utilities/include/**",
-        "/home/patty/rse_ws/src/NICS/uav_ctrl/include/**",
+        "/home/patty/rse_ws/src/NICS/nics_uav/include/**",
         "/opt/ros/noetic/include/**",
         "/usr/include/**",
-        "/home/patty/rse_ws/src/NICS/uav_ctrl/include/**"
+        "/home/patty/rse_ws/src/NICS/nics_uav/include/**"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",
