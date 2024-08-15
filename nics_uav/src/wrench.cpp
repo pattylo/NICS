@@ -11,12 +11,12 @@ static ros::ServiceClient body_wrench_client;
 static ros::Publisher wrench_data_pub;
 
 static WRENCH applied_wrench;
-static double mass = 11.2;     // Unit: kg
+static double mass = 1.5;     // Unit: kg
 static gazebo_msgs::ApplyBodyWrench wrench; 
 
 void applyDisturbance()
 {
-    wrench.request.body_name = "iris:";
+    wrench.request.body_name = "iris::base_link";
     wrench.request.reference_frame = "world"; //NED
     wrench.request.wrench.force.x = applied_wrench.fx;
     wrench.request.wrench.force.y = applied_wrench.fy;

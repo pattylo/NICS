@@ -86,10 +86,18 @@ add_dependencies(ctrl_node
   )
 
 
-  add_executable(offb
+add_executable(offb
   src/offb.cpp
 )
 
 target_link_libraries(offb
+  ${catkin_LIBRARIES}
+)
+
+add_executable(wrench
+  src/wrench.cpp
+)
+
+target_link_libraries(wrench
   ${catkin_LIBRARIES}
 )

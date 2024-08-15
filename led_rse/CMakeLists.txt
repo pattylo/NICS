@@ -32,7 +32,7 @@ roslaunch_add_file_check(launch)
 
 add_message_files(
   FILES
-  led_rse_blank.msg
+  vdrse_log.msg
 )
 
 
@@ -56,4 +56,21 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Sophus_INCLUDE_DIRS}
   ros_utilities
+)
+
+add_library(nics
+  src/vdrse.cpp
+  src/RosTopicConfigs.cpp
+  )
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(
+  nics
+  ${catkin_LIBRARIES}
+  ${OpenCV_INCLUDE_DIRS}
+  ${Sophus_INCLUDE_DIRS}
+)
+add_dependencies(
+  nics
+  led_rse_generate_messages_cpp
 )

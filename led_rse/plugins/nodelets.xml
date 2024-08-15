@@ -1,0 +1,9 @@
+<library path="lib/libnics">
+    <class name ="nics/VdrseNodelet" 
+        type="nics::VdrseNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description>
+            Launch nodelet here. Vdrse it is.
+        </description>
+    </class>
+</library> 

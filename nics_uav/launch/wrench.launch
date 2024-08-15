@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <launch>
-	<node pkg="bluerov2_path" type="bluerov2_wrench" name="bluerov2_wrench" output="screen">
-        <param name="wrench_x" type="double" value="40.0"/>
-        <param name="wrench_y" type="double" value="40.0"/>
-        <param name="wrench_z" type="double" value="10.0"/>
+	<node pkg="nics_uav" type="wrench" name="nics_uav" output="screen">
+        <param name="wrench_x" type="double" value="1.5"/>
+        <param name="wrench_y" type="double" value="1.5"/>
+        <param name="wrench_z" type="double" value="0.5"/>
 	</node>
         <!-- <include file="$(find uuv_control_utils)/launch/apply_body_wrench.launch">
                 <arg name="uuv_name" value="bluerov2"/>
