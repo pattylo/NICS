@@ -1,5 +1,5 @@
 /*
-    This file is part of NICS - the non-robocentric dynamic landing system for quadrotor
+    This file is part of NICS - a non-inertial control system
 
     NICS is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 
 /**
  * \file ledvo_nodelet.h
- * \date 11/12/2022
+ * \date 16/08/2024
  * \author pattylo
  * \copyright (c) RCUAS of Hong Kong Polytechnic University
- * \brief classes for vision-based relative localization for UAV and UGV based on LED markers
- */
+ * \brief nodelet header
+*/
 
-#ifndef LEDVO_NODELET_H
-#define LEDVO_NODELET_H
+#ifndef VDRSE_NODELET_H
+#define VDRSE_NODELET_H
 
 #include <pluginlib/class_list_macros.h>
 #include <nodelet/nodelet.h>

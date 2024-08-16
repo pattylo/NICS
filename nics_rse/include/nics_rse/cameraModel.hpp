@@ -1,5 +1,5 @@
 /*
-    This file is part of NICS - the non-robocentric dynamic landing system for quadrotor
+    This file is part of NICS - a non-inertial control system
 
     NICS is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,13 +21,12 @@
  * \author pattylo
  * \copyright (c) AIRO-Lab, RCUAS of Hong Kong Polytechnic University
  * \brief utilities functions involving cameraModel
- */
+*/
 
 #ifndef CAMERAMODEL_HPP
 #define CAMERAMODEL_HPP
 
-// #include <ros_utilities/ros_utilities.h>
-#include "essential.h"
+#include <ros_utilities/ros_utilities.h>
 #include <sophus/se3.hpp>
 
 namespace vision{

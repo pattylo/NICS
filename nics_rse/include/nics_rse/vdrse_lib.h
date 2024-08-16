@@ -1,5 +1,5 @@
 /*
-    This file is part of NICS - the non-robocentric dynamic landing system for quadrotor
+    This file is part of NICS - a non-inertial control system
 
     NICS is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,18 +16,17 @@
 */
 
 /**
- * \file led.h
- * \date 28/07/2022
+ * \file ledvo_nodelet.h
+ * \date 16/08/2024
  * \author pattylo
  * \copyright (c) RCUAS of Hong Kong Polytechnic University
- * \brief classes for vision-based relative localization for UAV and UGV based on LED markers
- */
+ * \brief lib header
+*/
 
 #ifndef VDRSE_H
 #define VDRSE_H
 
 #include <opencv2/calib3d.hpp>
-
 #include <ros_utilities/ros_utilities.h>
 #include "aiekf.hpp"
 #include "nics_rse/vdrse_log.h"
