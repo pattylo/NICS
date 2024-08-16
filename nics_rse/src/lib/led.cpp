@@ -20,10 +20,188 @@
  * \date 16/08/2024
  * \author pattylo
  * \copyright (c) RCUAS of Hong Kong Polytechnic University
- * \brief lib - feature-related
+ * \brief lib - led
 */
 
 #include "nics_rse/vdrse_lib.h"
+
+
+bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
+{
+    std::get<1>(corres_global_current).clear();
+
+    std::vector<Eigen::Vector2d> pts_2d_detect = LED_extract_POI(frame, depth); 
+    std::vector<Eigen::Vector3d> pts_3d_pcl_detect = pointcloud_generate(pts_2d_detect, depth);
+
+    //after above, I got:
+    //pointcloud in {c}
+    std::vector<double> norm_of_x_points, norm_of_y_points, norm_of_z_points;
+
+    for(auto what :  pts_3d_pcl_detect)
+    {
+        norm_of_x_points.push_back(what.x());
+        norm_of_y_points.push_back(what.y());
+        norm_of_z_points.push_back(what.z());
+    }
+
+    // cout<<pts_3d_pcl_detect.size()<<endl;
+    // cout<<LED_no<<endl;
+
+    if(pts_3d_pcl_detect.size() == LED_no  //we got LED_no
+        && calculate_MAD(norm_of_x_points) < MAD_x_threshold //no outlier
+        && calculate_MAD(norm_of_y_points) < MAD_y_threshold 
+        && calculate_MAD(norm_of_z_points) < MAD_z_threshold) 
+    {
+        Sophus::SE3d pose;
+
+        int i = 0;
+
+        //hsv detect color feature
+        cv::cvtColor(hsv, hsv, CV_RGB2HSV);
+        std::vector<bool> g_or_r; //g = true
+
+        std::vector<int> corres_g;
+        std::vector<int> corres_r;
+
+        for(int i = 0 ; i < blobs_for_initialize.size(); i++)
+        {
+            cv::Point hsv_vertice1 = cv::Point(pts_2d_detect[i].x() - 2 * blobs_for_initialize[i].size,
+                                               pts_2d_detect[i].y() - 2 * blobs_for_initialize[i].size);
+            cv::Point hsv_vertice2 = cv::Point(pts_2d_detect[i].x() + 2 * blobs_for_initialize[i].size,
+                                               pts_2d_detect[i].y() + 2 * blobs_for_initialize[i].size);
+
+            cv::Rect letsgethsv(hsv_vertice1, hsv_vertice2);
+
+            cv::Mat ROI(hsv, letsgethsv);
+
+            int size = ROI.cols * ROI.rows;
+            
+            double accu = 0;
+
+            cv::Vec3b hsv_value;
+
+            for(int i = 0; i < ROI.rows; i++)
+            {
+                for(int j = 0; j < ROI.cols; j++)
+                {
+                    hsv_value = ROI.at<cv::Vec3b>(i, j);
+
+                    if(hsv_value[0] == 0)                    
+                        size = size - 1;                
+                    else
+                        accu = accu + hsv_value[0];
+                }
+            }
+
+            if(accu/size < 100)
+                corres_g.push_back(i);
+            else   
+                corres_r.push_back(i);
+        }
+
+        std::vector<int> corres(LED_no);
+
+        if(corres_g.size() != LED_g_no || corres_r.size() != LED_r_no)
+        {
+            // cout<<"color"<<endl;
+            // cout<<corres_g.size()<<endl;
+            // cout<<corres_r.size()<<endl;
+            return false;
+        }
+
+        std::vector<int> final_corres;
+        double error_total = INFINITY;
+
+        Eigen::Matrix3d R;
+        Eigen::Vector3d t;
+
+        do
+        {
+            do
+            {
+                corres.clear();
+                for(auto what : corres_g)
+                    corres.push_back(what);
+                for(auto what : corres_r)
+                    corres.push_back(what);
+
+                std::vector<Eigen::Vector2d> pts_2d_detect_temp;   
+
+                for(auto what : corres)
+                {
+                    pts_2d_detect_temp.push_back(pts_2d_detect[what]);
+                }
+                                                        
+                solve_pnp_initial_pose(pts_2d_detect_temp, pts_on_body_frame);
+                
+                pose_global_sophus = pose_epnp_sophus;
+
+                double e = get_reprojection_error(                    
+                    pts_on_body_frame,
+                    pts_2d_detect_temp,
+                    pose_global_sophus,
+                    false
+                );
+
+                if(e < error_total)
+                {                    
+                    error_total = e;
+                    final_corres = corres;
+                    
+                    // if(error_total < 5)
+                    //     break;
+                }                        
+            } while (next_permutation(corres_r.begin(), corres_r.end()));
+
+        } while(next_permutation(corres_g.begin(), corres_g.end()));
+
+                
+        BA_error = error_total;
+
+        if(BA_error > LED_no * 2)
+        {
+            ROS_WARN("HELLO?");
+            return false;
+        }
+
+        correspondence::matchid corres_temp;
+        
+        pts_2d_detect_correct_order.clear();
+        
+        for(auto what : final_corres)
+        {
+            corres_temp.detected_indices = what;
+            corres_temp.detected_ornot = true;
+            corres_temp.pts_3d_correspond = pts_3d_pcl_detect[what];            
+            corres_temp.pts_2d_correspond = pts_2d_detect[what];
+
+            pts_2d_detect_correct_order.push_back(pts_2d_detect[what]); 
+
+            std::get<1>(corres_global_current).push_back(corres_temp);
+        }
+
+        if(std::get<1>(corres_global_current).size() != LED_no)
+        {
+            ROS_RED_STREAM("PLEASE DEBUG");
+
+        }
+
+        camOptimize(
+            pose_global_sophus, 
+            pts_on_body_frame, 
+            pts_2d_detect_correct_order,
+            BA_error
+        );
+
+        detect_no = 6;
+        std::get<0>(corres_global_current) = detect_no;
+        corres_global_previous = corres_global_current;
+
+        return true;
+    }
+    else
+        return false;
+}
 
 void nics::VdrseLib::get_correspondence(
     std::vector<Eigen::Vector2d>& pts_2d_detected
@@ -266,9 +444,6 @@ void nics::VdrseLib::solve_pnp_initial_pose(std::vector<Eigen::Vector2d> pts_2d,
     // }
 
 }
-
-
-
 
 /* ================ POI Extraction utilities function below ================ */
 std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI(cv::Mat& frame, cv::Mat depth)

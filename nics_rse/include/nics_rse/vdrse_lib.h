@@ -60,9 +60,15 @@ namespace nics
     class VdrseLib : private kf::aiekf, private ros_utilities
     {
         public:
-        VdrseLib(ros::NodeHandle& nh);
-        ~VdrseLib();
+        VdrseLib(ros::NodeHandle& nh) : _nh(nh)
+        {
+            ROS_INFO("VDRSE Nodelet Initiated...");
+
+            doALOTofConfigs(nh);
+        };
+        ~VdrseLib(){};
         private:
+        ros::NodeHandle _nh;
         //primary objects
             //frames
             cv::Mat frame, display, hsv, frame_temp;
@@ -256,9 +262,6 @@ namespace nics
             Eigen::VectorXd led_twist_current;
 
 //---------------------------------------------------------------------------------------
-
-            
-
             void doALOTofConfigs(ros::NodeHandle& nh);
         
             void POI_config(ros::NodeHandle& nh);
@@ -267,8 +270,28 @@ namespace nics
             void CamInGeneralBody_config(ros::NodeHandle& nh);
             void LEDInBodyAndOutlierSetting_config(ros::NodeHandle& nh);              
             void KF_config(ros::NodeHandle& nh);
+            void ESO_config(ros::NodeHandle& nh);
             void subpub_config(ros::NodeHandle& nh);
             inline void other_config(ros::NodeHandle& nh){};
+//---------------------------------------------------------------------------------------
+            Eigen::VectorXd z_I = Eigen::VectorXd::Zero(9);
+            Eigen::VectorXd dz_I = Eigen::VectorXd::Zero(9);
+            
+            Eigen::MatrixXd A_eso;
+            Eigen::MatrixXd B_eso;
+            Eigen::MatrixXd L_eso;
+            Eigen::MatrixXd C_eso;
+            Eigen::VectorXd u_input;
+            
+            ros::Subscriber u_sub;
+            ros::Timer eso_spinner;
+
+            void eso_mainspinCallback(const ros::TimerEvent &e);
+            void u_Callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg);
+            void set_dz();
+            void get_gain();
+            void update_z();
+
     };
 }
 

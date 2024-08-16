@@ -16,23 +16,28 @@
 */
 
 /**
- * \file ledvo_nodelet.h
+ * \file eso.cpp
  * \date 16/08/2024
  * \author pattylo
  * \copyright (c) RCUAS of Hong Kong Polytechnic University
- * \brief lib cpp
+ * \brief lib - configuration
 */
 
 #include "nics_rse/vdrse_lib.h"
 
-nics::VdrseLib::VdrseLib(ros::NodeHandle& nh)
+void nics::VdrseLib::set_dz()
 {
-	ROS_INFO("VDRSE Nodelet Initiated...");
-
-    doALOTofConfigs(nh);
+    dz_I = A_eso * z_I + B_eso * 
+    
 }
 
-nics::VdrseLib::~VdrseLib()
+void nics::VdrseLib::update_z()
 {
-    
+
+}
+
+void nics::VdrseLib::get_gain()
+{
+
+
 }

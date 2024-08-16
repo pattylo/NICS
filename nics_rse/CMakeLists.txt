@@ -60,10 +60,12 @@ include_directories(
 
 add_library(nics
   src/vdrse_nodelet.cpp
-  src/config.cpp
-  src/feature.cpp
-  src/main_process.cpp
-  src/vdrse_lib.cpp
+  
+  src/lib/config.cpp
+  src/lib/eso.cpp
+  src/lib/led.cpp
+  src/lib/log.cpp
+  src/lib/main_process.cpp
   )
 
 ## Specify libraries to link a library or executable target against
