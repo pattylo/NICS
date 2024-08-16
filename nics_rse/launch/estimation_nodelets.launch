@@ -1,0 +1,11 @@
+<launch>
+    <!-- ROS Nodelet manager -->
+    <node pkg="nodelet" type="nodelet" name="nics_master" args="manager" output="screen">
+            <rosparam command="load" file="$(find nics_rse)/launch/configs/alan_pose_estimation.yaml" />
+    </node> 
+
+    <!-- VdrseNodelet -->
+    <node pkg="nodelet" type="nodelet" name="vdrse" args="load nics/VdrseNodelet nics_master" output="screen">
+        <rosparam command="load" file="$(find nics_rse)/launch/configs/VDRSE_SUBPUB_topics.yaml" />
+    </node> 
+</launch>
