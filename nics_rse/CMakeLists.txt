@@ -60,7 +60,6 @@ include_directories(
 
 add_library(nics
   src/vdrse_nodelet.cpp
-  src/com.cpp
   src/config.cpp
   src/feature.cpp
   src/main_process.cpp
