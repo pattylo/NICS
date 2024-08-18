@@ -106,8 +106,17 @@ void nics::VdrseLib::eso_mainspinCallback(
     const ros::TimerEvent& e
 )
 {
+    if(!eso_activated)
+    {   
+        t_eso_prev = ros::Time::now().toSec();
+        return;
+    }
+        
+    ROS_CYAN_STREAM("ESO HERE");
+
     set_dz();
     update_z();
+    pub_z();
 }
 
 void nics::VdrseLib::solve_pose_w_LED(cv::Mat& frame, cv::Mat depth)

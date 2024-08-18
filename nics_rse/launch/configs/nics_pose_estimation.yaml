@@ -217,3 +217,7 @@ CONVERGE_THRESHOLD:
  0.01
 KF_ON:
  true
+
+
+hover_thrust:
+  0.5656

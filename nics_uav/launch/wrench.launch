@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 	<node pkg="nics_uav" type="wrench" name="nics_uav" output="screen">
-        <param name="wrench_x" type="double" value="1.5"/>
-        <param name="wrench_y" type="double" value="1.5"/>
+        <param name="wrench_x" type="double" value="-0.5"/>
+        <param name="wrench_y" type="double" value="-0.5"/>
         <param name="wrench_z" type="double" value="0.5"/>
 	</node>
         <!-- <include file="$(find uuv_control_utils)/launch/apply_body_wrench.launch">

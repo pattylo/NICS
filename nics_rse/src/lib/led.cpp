@@ -25,7 +25,6 @@
 
 #include "nics_rse/vdrse_lib.h"
 
-
 bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
 {
     std::get<1>(corres_global_current).clear();

@@ -282,15 +282,25 @@ namespace nics
             Eigen::MatrixXd L_eso;
             Eigen::MatrixXd C_eso;
             Eigen::VectorXd u_input;
+            Eigen::VectorXd y_eso;
+            double t_eso;
+            double t_eso_prev;
+            double hover_thrust;
+            double g = 9.81;
+            geometry_msgs::PointStamped z_dist;
             
             ros::Subscriber u_sub;
+            ros::Publisher z_dist_pub;
             ros::Timer eso_spinner;
 
+            bool eso_activated = false;
+
             void eso_mainspinCallback(const ros::TimerEvent &e);
-            void u_Callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg);
+            void u_callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg);
             void set_dz();
             void get_gain();
             void update_z();
+            void pub_z();
 
     };
 }

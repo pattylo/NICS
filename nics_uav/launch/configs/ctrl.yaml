@@ -30,3 +30,5 @@ take_off_z: 1.0
 
 hover_thrust: 0.5656
 pub_freq: 50
+
+obs_on: true

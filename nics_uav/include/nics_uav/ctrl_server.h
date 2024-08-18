@@ -51,12 +51,13 @@ private:
 
 //ros related
     // subscriber
-    ros::Subscriber uav_state_sub, uav_pose_sub;
+    ros::Subscriber uav_state_sub, uav_pose_sub, dist_sub;
     int counter = 0;
 
     bool got_pose = false;
     geometry_msgs::PoseStamped uav_pose;
     Sophus::SE3d uavPoseSE3;
+    Eigen::Vector3d ext_dist;
     inline void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     {
         got_pose = true;
@@ -68,6 +69,17 @@ private:
     inline void uavStateCallback(const mavros_msgs::State::ConstPtr& msg)
     {
         uav_current_state = *msg;
+    }
+
+    inline void distCallback(const geometry_msgs::PointStamped::ConstPtr& msg)
+    {
+        std::cout<<obs_on<<std::endl<<std::endl;
+        ext_dist = obs_on ? Eigen::Vector3d(
+            msg->point.x,
+            msg->point.y,
+            msg->point.z
+        ) : Eigen::Vector3d::Zero();
+        std::cout<<ext_dist<<std::endl<<std::endl;;
     }
     
     // publisher
@@ -132,6 +144,7 @@ private:
     Eigen::Vector4d kp, ki, kd;
     Eigen::Vector4d last_error, integral;
     int _pub_freq = 0;
+    bool obs_on = false;
     double v_max, a_max;
 
     XmlRpc::XmlRpcValue ff_gain_list;

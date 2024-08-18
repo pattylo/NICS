@@ -27,17 +27,45 @@
 
 void nics::VdrseLib::set_dz()
 {
-    dz_I = A_eso * z_I + B_eso * 
+    using namespace std;
     
+    y_eso = pose_uav_inWorld_SE3.translation();
+
+    dz_I = A_eso * z_I 
+        + B_eso * u_input 
+        + L_eso * (y_eso - C_eso * z_I);
+    // cout<<dz_I<<endl<<endl;
 }
 
 void nics::VdrseLib::update_z()
 {
+    using namespace std;
+    t_eso = ros::Time::now().toSec() - t_eso_prev;
+    if(t_eso > 1)
+    {   
+        std::cout<<t_eso<<std::endl;
+        patty::Debug("IN update_z");
+    }
+        
+    z_I = z_I + t_eso * dz_I;
+    t_eso_prev = ros::Time::now().toSec();
 
+    // cout<<z_I.head(3)<<endl;
 }
 
 void nics::VdrseLib::get_gain()
 {
+    L_eso;
+}
 
+void nics::VdrseLib::pub_z()
+{
+    z_dist.header.frame_id = "world";
+    z_dist.header.stamp = ros::Time::now();
+    
+    z_dist.point.x = z_I.tail(3).x();
+    z_dist.point.y = z_I.tail(3).y();
+    z_dist.point.z = z_I.tail(3).z();
 
+    z_dist_pub.publish(z_dist); 
 }

@@ -33,6 +33,8 @@ ctrl_server::ctrl_server(ros::NodeHandle& _nh)
             ("/mavros/state", 1, &ctrl_server::uavStateCallback, this);
     uav_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
             ("/mavros/local_position/pose", 1, &ctrl_server::poseCallback, this);
+    dist_sub = nh.subscribe<geometry_msgs::PointStamped>
+            ("/rse/dist", 1, &ctrl_server::distCallback, this);
     
     // check whether pose instantiate
     ros::Rate rate(20);
@@ -164,6 +166,10 @@ void ctrl_server::config(ros::NodeHandle& _nh)
 
     nh.getParam("pub_freq", _pub_freq);
     std::cout<<_pub_freq<<std::endl;
+
+    nh.getParam("obs_on", obs_on);
+    std::cout<<obs_on<<std::endl;
+    // ros::shutdown();
 
     uav_set_mode.request.custom_mode = "OFFBOARD";
     arm_cmd.request.value = true;
@@ -422,11 +428,13 @@ Eigen::Vector4d ctrl_server::pidff_controller(
 
 void ctrl_server::ctrl_pub()
 {
+    Eigen::Vector3d u_I = pid_controller(
+        uav_traj_pose,
+        target_traj_pose
+    ).head(3) - ext_dist;
+
     final_U = acc_to_U(
-        pid_controller(
-            uav_traj_pose,
-            target_traj_pose
-        ).head(3),
+        u_I,
         target_traj_pose(3)
     );
 

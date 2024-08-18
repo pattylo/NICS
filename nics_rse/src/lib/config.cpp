@@ -194,6 +194,7 @@ void nics::VdrseLib::KF_config(ros::NodeHandle& nh)
 
 void nics::VdrseLib::ESO_config(ros::NodeHandle& nh)
 {
+	nh.getParam("/nics_master/hover_thrust", hover_thrust);
 	A_eso.resize(9,9);
 	A_eso.setZero();
 	A_eso.block<3,3>(0,3).setIdentity();
@@ -207,9 +208,9 @@ void nics::VdrseLib::ESO_config(ros::NodeHandle& nh)
 
 	L_eso.resize(9,3);
 	L_eso.setZero();
-	L_eso.block<3,3>(0,0) = 3 * Eigen::Matrix3d::Identity();
-	L_eso.block<3,3>(3,0) = 3 * Eigen::Matrix3d::Identity();
-	L_eso.block<3,3>(6,0) = 3 * Eigen::Matrix3d::Identity();
+	L_eso.block<3,3>(0,0) = 6 * Eigen::Matrix3d::Identity();
+	L_eso.block<3,3>(3,0) = 12 * Eigen::Matrix3d::Identity();
+	L_eso.block<3,3>(6,0) = 24 * Eigen::Matrix3d::Identity();
 	std::cout<<L_eso<<std::endl<<std::endl;
 
 	C_eso.resize(3,9);
@@ -217,22 +218,25 @@ void nics::VdrseLib::ESO_config(ros::NodeHandle& nh)
 	C_eso.block<3,3>(0,0).setIdentity();
 	std::cout<<C_eso<<std::endl<<std::endl;
 
+	u_input.resize(3);
+	y_eso.resize(3);
+
 	Eigen::MatrixXd lala = (A_eso-L_eso*C_eso);
 	std::cout<<lala<<std::endl<<std::endl;
 
 	std::cout<<lala.eigenvalues()<<std::endl<<std::endl;
 
-	Eigen::MatrixXd lala2;
-	lala2.resize(3,3);
-	lala2 << -6, 1, 0, -12, 0, 1, -24, 0, 0;
-	std::cout<<lala2<<std::endl<<std::endl;
-	Eigen::EigenSolver<Eigen::MatrixXd> eigensolver;
-	eigensolver.compute(lala2);
-	std::cout<<eigensolver.eigenvalues()<<std::endl<<std::endl;
-	// std::cout<<lala2.eigenvalues()<<std::endl<<std::endl;
+	// Eigen::MatrixXd lala2;
+	// lala2.resize(3,3);
+	// lala2 << -6, 1, 0, -12, 0, 1, -24, 0, 0;
+	// std::cout<<lala2<<std::endl<<std::endl;
+	// Eigen::EigenSolver<Eigen::MatrixXd> eigensolver;
+	// eigensolver.compute(lala2);
+	// std::cout<<eigensolver.eigenvalues()<<std::endl<<std::endl;
+	// // std::cout<<lala2.eigenvalues()<<std::endl<<std::endl;
 
 
-	patty::Debug("IN ESO CONFIG");
+	// patty::Debug("IN ESO CONFIG");
 }
 
 void nics::VdrseLib::subpub_config(ros::NodeHandle& nh)
@@ -292,8 +296,12 @@ void nics::VdrseLib::subpub_config(ros::NodeHandle& nh)
         &VdrseLib::eso_mainspinCallback, 
         this
     );
-}
 
+	u_sub = nh.subscribe<mavros_msgs::AttitudeTarget>
+					("/mavros/setpoint_raw/attitude", 1, &VdrseLib::u_callback, this);
+	z_dist_pub = nh.advertise<geometry_msgs::PointStamped>
+					("/rse/dist", 1, true);
+}
 
 void nics::VdrseLib::ugv_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& pose)
 {
@@ -315,6 +323,7 @@ void nics::VdrseLib::ugv_pose_callback(const geometry_msgs::PoseStamped::ConstPt
 
 void nics::VdrseLib::uav_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& pose)
 {
+	ROS_INFO("UAV");
     pose_uav_inWorld_SE3 = posemsg_to_SE3(pose->pose);
     
     uav_pose_msg = *pose;
@@ -325,4 +334,37 @@ void nics::VdrseLib::uav_pose_callback(const geometry_msgs::PoseStamped::ConstPt
 void nics::VdrseLib::uav_setpt_callback(const geometry_msgs::PoseStamped::ConstPtr& pose)
 {
     uav_stpt_msg = *pose;
+}
+
+void nics::VdrseLib::u_callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg)
+{
+	std::cout<<"U INPUT!!!"<<std::endl;
+	std::cout<<Eigen::Vector3d(
+		0,
+		0,
+		msg->thrust / hover_thrust * g
+	)<<std::endl<<std::endl; 
+	
+	u_input = Eigen::Quaterniond(
+		msg->orientation.w,
+		msg->orientation.x,
+		msg->orientation.y,	
+		msg->orientation.z
+	).toRotationMatrix() 
+		* 
+	Eigen::Vector3d(
+		0,
+		0,
+		msg->thrust / hover_thrust * g
+	) - Eigen::Vector3d(0,0,g); 
+	
+	if(!eso_activated)
+		z_I << 
+			pose_uav_inWorld_SE3.translation(), 
+			Eigen::Vector3d::Zero(),
+			Eigen::Vector3d::Zero();
+			
+	eso_activated = true;
+	std::cout<<"U INPUT!!!"<<std::endl;
+	std::cout<<u_input<<std::endl<<std::endl;
 }
