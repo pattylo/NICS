@@ -39,9 +39,9 @@ void nics::VdrseLib::map_SE3_to_publish(
     
     Sophus::SE3d temp = pose_cam_inWorld_SE3;
     
-    std::cout<< velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
-    std::cout<<pose_cam_inGeneralBodySE3.rotationMatrix()<<std::endl<<std::endl;
-    std::cout<< pose_cam_inGeneralBodySE3.rotationMatrix() * velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
+    // std::cout<< velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
+    // std::cout<<pose_cam_inGeneralBodySE3.rotationMatrix()<<std::endl<<std::endl;
+    // std::cout<< pose_cam_inGeneralBodySE3.rotationMatrix() * velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
     
     temp.translation().setZero();
     velo_led_inWorld_SE3 = 
@@ -49,10 +49,10 @@ void nics::VdrseLib::map_SE3_to_publish(
         * pose_cam_inGeneralBodySE3
         * velo_led_inCamera_SE3;
 
-    std::cout<<pose_led_inWorld_SE3.translation()<<std::endl<<std::endl;;
-    std::cout<<pose_uav_inWorld_SE3.translation()<<std::endl<<std::endl;    
-    std::cout<<(pose_led_inWorld_SE3.translation() - pose_uav_inWorld_SE3.translation()).norm()<<std::endl;
-    std::cout<<"huh"<<std::endl;
+    // std::cout<<pose_led_inWorld_SE3.translation()<<std::endl<<std::endl;;
+    // std::cout<<pose_uav_inWorld_SE3.translation()<<std::endl<<std::endl;    
+    // std::cout<<(pose_led_inWorld_SE3.translation() - pose_uav_inWorld_SE3.translation()).norm()<<std::endl;
+    // std::cout<<"huh"<<std::endl;
     
     led_pose_header.frame_id = "world";
     led_pose_estimated_msg = SE3_to_posemsg(

@@ -43,7 +43,7 @@ void nics::VdrseLib::update_z()
     t_eso = ros::Time::now().toSec() - t_eso_prev;
     if(t_eso > 1)
     {   
-        std::cout<<t_eso<<std::endl;
+        // std::cout<<t_eso<<std::endl;
         patty::Debug("IN update_z");
     }
         

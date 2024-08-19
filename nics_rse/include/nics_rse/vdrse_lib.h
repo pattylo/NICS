@@ -157,7 +157,7 @@ namespace nics
         
         //LED extraction tool
             //objects
-            double LANDING_DISTANCE = 0;
+            double EFFECTIVE_DISTANCE = 0;
             int BINARY_THRES = 0;
 
             std::vector<Eigen::Vector3d> pts_on_body_frame_in_corres_order;

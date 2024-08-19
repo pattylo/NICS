@@ -30,8 +30,6 @@ void nics::VdrseLib::camera_callback(
     const sensor_msgs::Image::ConstPtr& depthmsg
 )
 {
-    ROS_INFO("CAM");
-    return;
     cv_bridge::CvImageConstPtr depth_ptr;
     led_pose_header = rgbmsg->header;
 
@@ -67,14 +65,7 @@ void nics::VdrseLib::camera_callback(
         printf("\033c");
         ROS_RED_STREAM("RESET TERMINAL!");
     }           
-
-    std::cout<<frame.cols<<std::endl;
-    std::cout<<frame.rows<<std::endl;
-
-    std::cout<<depth.cols<<std::endl;
-    std::cout<<depth.rows<<std::endl;
-
-           
+    
     solve_pose_w_LED(frame, depth);
     
     double tock = ros::Time::now().toSec();  
@@ -91,8 +82,7 @@ void nics::VdrseLib::camera_callback(
         log(tock - tick);
         record_ms();
     }
-        
-                    
+                            
     last_request = ros::Time::now().toSec();
 
     if(!nodelet_activated)
@@ -112,7 +102,7 @@ void nics::VdrseLib::eso_mainspinCallback(
         return;
     }
         
-    ROS_CYAN_STREAM("ESO HERE");
+    // ROS_CYAN_STREAM("ESO HERE");
 
     set_dz();
     update_z();
@@ -123,11 +113,12 @@ void nics::VdrseLib::solve_pose_w_LED(cv::Mat& frame, cv::Mat depth)
 {    
     if(!LED_tracker_initiated_or_tracked)        
     {
-        double tick0 = ros::Time::now().toSec();
+        // double tick0 = ros::Time::now().toSec();
         LED_tracker_initiated_or_tracked = initialization(frame, depth);
+        
         // try to initialize here...
         double tock0 = ros::Time::now().toSec();
-        init_ms = (tock0 - tick0) * 1000;
+        // init_ms = (tock0 - tick0) * 1000;
         std::cout<<"INITIALIZATION"<<init_ms<<std::endl;
         // ros::shutdown();
 
@@ -265,6 +256,9 @@ void nics::VdrseLib::recursive_filtering(cv::Mat& frame, cv::Mat depth)
         pose_global_sophus,
         true
     );
+
+    // cv::imshow("display", display);
+    // cv::waitKey(4);
 
     if(BA_error > 4 * LED_no)
     {

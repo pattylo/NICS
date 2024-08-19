@@ -79,3 +79,11 @@ add_dependencies(
   nics
   nics_rse_generate_messages_cpp
 )
+
+add_executable(camera_extrinsic
+  src/camera_extrinsic.cpp
+)
+
+target_link_libraries(camera_extrinsic
+  ${catkin_LIBRARIES}
+)

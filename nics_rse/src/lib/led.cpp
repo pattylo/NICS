@@ -29,8 +29,25 @@ bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
 {
     std::get<1>(corres_global_current).clear();
 
+    // std::cout<<5<<std::endl;
     std::vector<Eigen::Vector2d> pts_2d_detect = LED_extract_POI(frame, depth); 
+    // std::cout<<6<<std::endl;
+    // std::cout<<"hi"<<std::endl;
+    
+    // for(auto what : pts_2d_detect)
+    //     std::cout<<what<<std::endl<<std::endl;
+    
+    // // std::cout<<7<<std::endl;
+    // if(pts_2d_detect.size() > LED_no)
+    //     ROS_GREEN_STREAM("+++++++++++++++++++++++++++++++++++");
+    // std::cout<<pts_2d_detect.size()<<std::endl;
+    // cout<<LED_no<<endl;
+
+    // // return false;
+
     std::vector<Eigen::Vector3d> pts_3d_pcl_detect = pointcloud_generate(pts_2d_detect, depth);
+
+
 
     //after above, I got:
     //pointcloud in {c}
@@ -43,8 +60,7 @@ bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
         norm_of_z_points.push_back(what.z());
     }
 
-    // cout<<pts_3d_pcl_detect.size()<<endl;
-    // cout<<LED_no<<endl;
+    
 
     if(pts_3d_pcl_detect.size() == LED_no  //we got LED_no
         && calculate_MAD(norm_of_x_points) < MAD_x_threshold //no outlier
@@ -62,106 +78,100 @@ bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
         std::vector<int> corres_g;
         std::vector<int> corres_r;
 
-        for(int i = 0 ; i < blobs_for_initialize.size(); i++)
+        std::vector<int> corres_to_sort;
+
+        for(int i = 0; i < blobs_for_initialize.size(); i++)
         {
-            cv::Point hsv_vertice1 = cv::Point(pts_2d_detect[i].x() - 2 * blobs_for_initialize[i].size,
-                                               pts_2d_detect[i].y() - 2 * blobs_for_initialize[i].size);
-            cv::Point hsv_vertice2 = cv::Point(pts_2d_detect[i].x() + 2 * blobs_for_initialize[i].size,
-                                               pts_2d_detect[i].y() + 2 * blobs_for_initialize[i].size);
-
-            cv::Rect letsgethsv(hsv_vertice1, hsv_vertice2);
-
-            cv::Mat ROI(hsv, letsgethsv);
-
-            int size = ROI.cols * ROI.rows;
-            
-            double accu = 0;
-
-            cv::Vec3b hsv_value;
-
-            for(int i = 0; i < ROI.rows; i++)
-            {
-                for(int j = 0; j < ROI.cols; j++)
-                {
-                    hsv_value = ROI.at<cv::Vec3b>(i, j);
-
-                    if(hsv_value[0] == 0)                    
-                        size = size - 1;                
-                    else
-                        accu = accu + hsv_value[0];
-                }
-            }
-
-            if(accu/size < 100)
-                corres_g.push_back(i);
-            else   
-                corres_r.push_back(i);
+            corres_to_sort.emplace_back(i);
         }
+
+        // for(int i = 0 ; i < blobs_for_initialize.size(); i++)
+        // {
+        //     cv::Point hsv_vertice1 = cv::Point(pts_2d_detect[i].x() - 2 * blobs_for_initialize[i].size,
+        //                                        pts_2d_detect[i].y() - 2 * blobs_for_initialize[i].size);
+        //     cv::Point hsv_vertice2 = cv::Point(pts_2d_detect[i].x() + 2 * blobs_for_initialize[i].size,
+        //                                        pts_2d_detect[i].y() + 2 * blobs_for_initialize[i].size);
+
+        //     cv::Rect letsgethsv(hsv_vertice1, hsv_vertice2);
+
+        //     cv::Mat ROI(hsv, letsgethsv);
+
+        //     int size = ROI.cols * ROI.rows;
+            
+        //     double accu = 0;
+
+        //     cv::Vec3b hsv_value;
+
+        //     for(int i = 0; i < ROI.rows; i++)
+        //     {
+        //         for(int j = 0; j < ROI.cols; j++)
+        //         {
+        //             hsv_value = ROI.at<cv::Vec3b>(i, j);
+
+        //             if(hsv_value[0] == 0)                    
+        //                 size = size - 1;                
+        //             else
+        //                 accu = accu + hsv_value[0];
+        //         }
+        //     }
+
+        //     if(accu/size < 100)
+        //         corres_g.push_back(i);
+        //     else   
+        //         corres_r.push_back(i);
+        // }
 
         std::vector<int> corres(LED_no);
-
-        if(corres_g.size() != LED_g_no || corres_r.size() != LED_r_no)
-        {
-            // cout<<"color"<<endl;
-            // cout<<corres_g.size()<<endl;
-            // cout<<corres_r.size()<<endl;
-            return false;
-        }
 
         std::vector<int> final_corres;
         double error_total = INFINITY;
 
         Eigen::Matrix3d R;
         Eigen::Vector3d t;
+        int test_i = 0;
 
-        do
-        {
-            do
+        do{
+            test_i++;
+            corres.clear();
+            for(auto what : corres_to_sort)
+                corres.push_back(what);
+
+            std::vector<Eigen::Vector2d> pts_2d_detect_temp;   
+
+            for(auto what : corres)
             {
-                corres.clear();
-                for(auto what : corres_g)
-                    corres.push_back(what);
-                for(auto what : corres_r)
-                    corres.push_back(what);
+                pts_2d_detect_temp.push_back(pts_2d_detect[what]);
+            }
+                                                    
+            solve_pnp_initial_pose(pts_2d_detect_temp, pts_on_body_frame);
+            
+            pose_global_sophus = pose_epnp_sophus;
 
-                std::vector<Eigen::Vector2d> pts_2d_detect_temp;   
+            double e = get_reprojection_error(                    
+                pts_on_body_frame,
+                pts_2d_detect_temp,
+                pose_global_sophus,
+                false
+            );
 
-                for(auto what : corres)
-                {
-                    pts_2d_detect_temp.push_back(pts_2d_detect[what]);
-                }
-                                                        
-                solve_pnp_initial_pose(pts_2d_detect_temp, pts_on_body_frame);
+            if(e < error_total)
+            {                    
+                error_total = e;
+                final_corres = corres;
                 
-                pose_global_sophus = pose_epnp_sophus;
-
-                double e = get_reprojection_error(                    
-                    pts_on_body_frame,
-                    pts_2d_detect_temp,
-                    pose_global_sophus,
-                    false
-                );
-
-                if(e < error_total)
-                {                    
-                    error_total = e;
-                    final_corres = corres;
-                    
-                    // if(error_total < 5)
-                    //     break;
-                }                        
-            } while (next_permutation(corres_r.begin(), corres_r.end()));
-
-        } while(next_permutation(corres_g.begin(), corres_g.end()));
-
+                // if(error_total < 5)
+                //     break;
+            }                        
+        }
+        while (next_permutation(
+            corres_to_sort.begin(), 
+            corres_to_sort.end()
+            )
+        );
                 
         BA_error = error_total;
 
-        if(BA_error > LED_no * 2)
-        {
-            ROS_WARN("HELLO?");
-            return false;
-        }
+        
 
         correspondence::matchid corres_temp;
         
@@ -179,10 +189,35 @@ bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
             std::get<1>(corres_global_current).push_back(corres_temp);
         }
 
+        double e = get_reprojection_error(                    
+            pts_on_body_frame,
+            pts_2d_detect_correct_order,
+            pose_global_sophus,
+            true
+        );
+
+        // std::cout<<test_i<<std::endl;
+        for(auto what : pts_2d_detect_correct_order)
+        {
+            std::cout<<what<<std::endl<<std::endl;
+        }
+        for(auto what : final_corres)
+            std::cout<<what<<std::endl<<std::endl;
+
+        // cv::imshow("display", display);
+        // cv::waitKey(4);
+
+        if(BA_error > LED_no * 3)
+        {
+            std::cout<<BA_error<<std::endl;
+            ROS_WARN("HELLO?");
+            patty::Debug("INIT FAIL");
+            return false;
+        }
+
         if(std::get<1>(corres_global_current).size() != LED_no)
         {
             ROS_RED_STREAM("PLEASE DEBUG");
-
         }
 
         camOptimize(
@@ -195,6 +230,8 @@ bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
         detect_no = 6;
         std::get<0>(corres_global_current) = detect_no;
         corres_global_previous = corres_global_current;
+
+        // patty::Debug("IN INIT");
 
         return true;
     }
@@ -395,8 +432,10 @@ void nics::VdrseLib::solve_pnp_initial_pose(std::vector<Eigen::Vector2d> pts_2d,
 
     // either one
     // cv::solvePnP(pts_3d_, pts_2d_ ,camMat, distCoeffs, rvec, tvec, cv::SOLVEPNP_EPNP);
-    cv::solvePnP(pts_3d_, pts_2d_ ,camMat, distCoeffs, rvec, tvec, cv::SOLVEPNP_ITERATIVE);
     
+    // cv::solvePnP(pts_3d_, pts_2d_ ,camMat, distCoeffs, rvec, tvec, cv::SOLVEPNP_ITERATIVE);
+    cv::solvePnP(pts_3d_, pts_2d_ ,camMat, distCoeffs, rvec, tvec, cv::SOLVEPNP_EPNP);
+
     //opt pnp algorithm
     //, cv::SOLVEPNP_EPNP
     //, cv::SOLVEPNP_IPPE
@@ -449,18 +488,22 @@ std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI(cv::Mat& frame, cv:
 {   
     cv::Mat depth_mask_src = depth.clone(), depth_mask_dst1, depth_mask_dst2;
 
-    cv::threshold(depth_mask_src, depth_mask_dst1, LANDING_DISTANCE * 1000, 50000, cv::THRESH_BINARY_INV);
-    //filter out far depths
+    cv::threshold(depth_mask_src, depth_mask_dst1, EFFECTIVE_DISTANCE * 1000, 50000, cv::THRESH_BINARY_INV);
+    // filter out far depths
 
-    cv::threshold(depth_mask_src, depth_mask_dst2, 0.5, 50000, cv::THRESH_BINARY); 
+    // cv::threshold(depth_mask_src, depth_mask_dst2, 0.5, 50000, cv::THRESH_BINARY); 
     //filter out zeros
 
-    cv::bitwise_and(depth_mask_dst1, depth_mask_dst2, depth_mask_src);
+    // cv::bitwise_and(depth_mask_dst1, depth_mask_dst2, depth_mask_src);
     
-    depth_mask_src.convertTo(depth_mask_src, CV_8U);
+    // depth_mask_src.convertTo(depth_mask_src, CV_8U);
+    depth_mask_dst1.convertTo(depth_mask_src, CV_8U);
    
     cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+    cv::GaussianBlur(frame, frame, cv::Size(39,39), 1.0, 1.0, cv::BORDER_DEFAULT);
     cv::threshold(frame, frame, BINARY_THRES, 255, cv::THRESH_BINARY);
+    cv::GaussianBlur(frame, frame, cv::Size(9,9), 1.0, 1.0, cv::BORDER_DEFAULT);
+    
     frame_initial_thresholded = frame.clone();
 
     // detect frame after filter out background
@@ -470,18 +513,20 @@ std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI(cv::Mat& frame, cv:
     std::vector<cv::KeyPoint> keypoints_rgb_d;
 	cv::SimpleBlobDetector::Params params;
 
-	params.filterByArea = false;
+	params.filterByArea = true;
     params.filterByColor = false;
 	params.filterByCircularity = false;
 	params.filterByConvexity = false;
 	params.filterByInertia = false;
-    params.minDistBetweenBlobs = 0.01;
+    params.minDistBetweenBlobs = 1.0;
+    params.minArea = 1.0;
 
 	cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
 
     detector->detect(frame, keypoints_rgb_d);
-	// cv::drawKeypoints( frame, keypoints_rgb_d, im_with_keypoints,CV_RGB(255,0,0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+	cv::drawKeypoints( frame, keypoints_rgb_d, im_with_keypoints,CV_RGB(255,0,0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
+    
     
     blobs_for_initialize = keypoints_rgb_d;
 
@@ -493,6 +538,7 @@ std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI(cv::Mat& frame, cv:
         min_blob_size =(what.size < min_blob_size ? what.size : min_blob_size);
         POI.push_back(Eigen::Vector2d(what.pt.x, what.pt.y));
     }
+        
 
     return POI;
 }
@@ -504,12 +550,13 @@ std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI_alter(cv::Mat& fram
 
     cv::Mat depth_mask_src = depth.clone(), depth_mask_dst1, depth_mask_dst2;
 
-    cv::threshold(depth_mask_src, depth_mask_dst1, LANDING_DISTANCE * 1000, 50000, cv::THRESH_BINARY_INV);
+    cv::threshold(depth_mask_src, depth_mask_dst1, EFFECTIVE_DISTANCE * 1000, 50000, cv::THRESH_BINARY_INV);
     //filter out far depths
     
     depth_mask_dst1.convertTo(depth_mask_dst1, CV_8U);
    
     cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+    cv::GaussianBlur(frame, frame, cv::Size(39,39), 1.0, 1.0, cv::BORDER_DEFAULT);
     cv::threshold(frame, frame, BINARY_THRES, 255, cv::THRESH_BINARY);
     frame_initial_thresholded = frame.clone();
 
@@ -548,7 +595,7 @@ std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI_alter(cv::Mat& fram
     cv::Mat final_ROI;
     frame.copyTo(final_ROI, ROI_mask);
     // final input should be final_ROI here!!!!!!!!!!!
-    cv::GaussianBlur(final_ROI, final_ROI, cv::Size(0,0), 1.0, 1.0, cv::BORDER_DEFAULT);
+    cv::GaussianBlur(final_ROI, final_ROI, cv::Size(19,19), 1.0, 1.0, cv::BORDER_DEFAULT);
 
     // Blob method
     std::vector<cv::KeyPoint> keypoints_rgb_d;
@@ -588,6 +635,13 @@ std::vector<Eigen::Vector2d> nics::VdrseLib::LED_extract_POI_alter(cv::Mat& fram
         if(pts_2d_detected.size() > LED_no)
         {
             ROS_WARN("LED_No over detection!!!!");
+                
+    
+            cv::imshow("test", im_with_keypoints);
+            cv::waitKey(4);
+            cv::imshow("orig", frame);
+            cv::waitKey(4);
+    
             // std::cout<<i<<std::endl;
             // cv::imwrite("/home/patty/alan_ws/over_detect_" 
             //             + std::to_string(temp) + "__" + std::to_string(i) + ".jpg", frame_input);

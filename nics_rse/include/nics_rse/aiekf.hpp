@@ -357,14 +357,14 @@ void kf::aiekf::setMeasurement(
     {
         current_velo = (XpreviousPosterori.X_SE3.translation() - XprePreviousPosterori.X_SE3.translation()) / deltaT;
 
-        std::cout<<"HERE IN AIEKF"<<std::endl;
-        std::cout<<current_velo<<std::endl<<std::endl;
+        // std::cout<<"HERE IN AIEKF"<<std::endl;
+        // std::cout<<current_velo<<std::endl<<std::endl;
 
         if(IIR_track)
         {
             current_velo = velo_IIR_alpha * current_velo + (1 - velo_IIR_alpha) * previous_velo;   
-            std::cout<<"HERE IN AIEKF AFTER IIR"<<std::endl;
-            std::cout<<current_velo<<std::endl<<std::endl;
+            // std::cout<<"HERE IN AIEKF AFTER IIR"<<std::endl;
+            // std::cout<<current_velo<<std::endl<<std::endl;
             // if(current_velo.norm() > 2)
             //     ros::shutdown();    
         }
