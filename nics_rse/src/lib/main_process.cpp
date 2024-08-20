@@ -16,7 +16,7 @@
 */
 
 /**
- * \file ledvo_nodelet.h
+ * \file main_process.cpp
  * \date 16/08/2024
  * \author pattylo
  * \copyright (c) RCUAS of Hong Kong Polytechnic University

@@ -16,7 +16,7 @@
 */
 
 /**
- * \file camera_extrinsic.cpp
+ * \file sys_id.cpp
  * \date 16/08/2024
  * \author pattylo
  * \copyright (c) RCUAS of Hong Kong Polytechnic University

@@ -131,9 +131,6 @@ void nics::VdrseLib::LEDInBodyAndOutlierSetting_config(ros::NodeHandle& nh)
 
 	LED_no = pts_on_body_frame.size();
 
-	nh.getParam("/nics_master/LED_r_number", LED_r_no);
-	nh.getParam("/nics_master/LED_g_number", LED_g_no);
-
 	//load outlier rejection info
 	nh.getParam("/nics_master/MAD_dilate", MAD_dilate);
 	nh.getParam("/nics_master/MAD_max", MAD_max);
@@ -141,10 +138,6 @@ void nics::VdrseLib::LEDInBodyAndOutlierSetting_config(ros::NodeHandle& nh)
 	MAD_x_threshold = (calculate_MAD(norm_of_x_points) * MAD_dilate > MAD_max ? MAD_max : calculate_MAD(norm_of_x_points) * MAD_dilate);
 	MAD_y_threshold = (calculate_MAD(norm_of_y_points) * MAD_dilate > MAD_max ? MAD_max : calculate_MAD(norm_of_y_points) * MAD_dilate);
 	MAD_z_threshold = (calculate_MAD(norm_of_z_points) * MAD_dilate > MAD_max ? MAD_max : calculate_MAD(norm_of_z_points) * MAD_dilate);
-
-	// std::cout<<MAD_x_threshold<<std::endl;
-	// std::cout<<MAD_y_threshold<<std::endl;
-	// std::cout<<MAD_z_threshold<<std::endl;
 
 	LED_no = pts_on_body_frame.size();
 }
@@ -190,24 +183,20 @@ void nics::VdrseLib::ESO_config(ros::NodeHandle& nh)
 	A_eso.setZero();
 	A_eso.block<3,3>(0,3).setIdentity();
 	A_eso.block<3,3>(3,6).setIdentity();
-	// std::cout<<A_eso<<std::endl<<std::endl;
 
 	B_eso.resize(9,3);
 	B_eso.setZero();
 	B_eso.block<3,3>(3,0).setIdentity();
-	// std::cout<<B_eso<<std::endl<<std::endl;
 
 	L_eso.resize(9,3);
 	L_eso.setZero();
 	L_eso.block<3,3>(0,0) = 6 * Eigen::Matrix3d::Identity();
 	L_eso.block<3,3>(3,0) = 12 * Eigen::Matrix3d::Identity();
 	L_eso.block<3,3>(6,0) = 24 * Eigen::Matrix3d::Identity();
-	// std::cout<<L_eso<<std::endl<<std::endl;
 
 	C_eso.resize(3,9);
 	C_eso.setZero();
 	C_eso.block<3,3>(0,0).setIdentity();
-	// std::cout<<C_eso<<std::endl<<std::endl;
 
 	u_input.resize(3);
 	y_eso.resize(3);
@@ -321,14 +310,7 @@ void nics::VdrseLib::uav_setpt_callback(const geometry_msgs::PoseStamped::ConstP
 }
 
 void nics::VdrseLib::u_callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg)
-{
-	// std::cout<<"U INPUT!!!"<<std::endl;
-	// std::cout<<Eigen::Vector3d(
-	// 	0,
-	// 	0,
-	// 	msg->thrust / hover_thrust * g
-	// )<<std::endl<<std::endl; 
-	
+{	
 	u_input = Eigen::Quaterniond(
 		msg->orientation.w,
 		msg->orientation.x,
@@ -349,6 +331,4 @@ void nics::VdrseLib::u_callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg
 			Eigen::Vector3d::Zero();
 			
 	eso_activated = true;
-	// std::cout<<"U INPUT!!!"<<std::endl;
-	// std::cout<<u_input<<std::endl<<std::endl;
 }
