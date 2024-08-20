@@ -1,0 +1,9 @@
+<launch>
+    <node name="data" pkg="alan_visualization" type="data" output="screen">
+        <param name="/log_path" type="string" value="/home/patty/alan_rebuttal_ws/src/ALAN_rebuttal/alan_visualization/log/land2024/"/>
+        <param name="/filename1" type="string" value="0801_land_led_sdf.csv"/>
+        <param name="/filename2" type="string" value="0801_land_uav_sdf.csv"/>
+        <param name="/ugv_topic" type="string" value="/vrpn_client_node/gh034_scout_fast/pose"/>
+        <!-- <param name="/ugv_topic" type="string" value="/vrpn_client_node/gh034_car/pose"/> -->
+    </node>         
+</launch>
