@@ -73,6 +73,20 @@ void nics::VdrseLib::map_SE3_to_publish(
     );
     
     ledodom_pub.publish(led_odom_estimated_msg);
+
+    std::cout<<
+        pose_led_inWorld_SE3.translation() 
+            - 
+        pose_uav_inWorld_SE3.translation()
+    <<std::endl<<std::endl;
+
+    std::cout<<
+        pose_ugv_inWorld_SE3.rotationMatrix().inverse() 
+            * pose_led_inWorld_SE3.translation()
+            -
+        pose_ugv_inWorld_SE3.rotationMatrix().inverse() 
+            * pose_uav_inWorld_SE3.translation()
+    <<std::endl<<std::endl;
 }
 
 void nics::VdrseLib::set_image_to_publish(double freq, const sensor_msgs::CompressedImageConstPtr & rgbmsg)

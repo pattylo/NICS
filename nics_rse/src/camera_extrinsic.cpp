@@ -65,7 +65,7 @@ void calculate_extrinsic()
 
     for (int i = 0; i < acc_B.size(); i++)
         if(abs(acc_B(i)) < 0.1)
-            acc_B(i) = 0;
+            acc_B(i) = abs(acc_B(i));
 
     std::cout<<acc_B<<std::endl<<std::endl;
 
@@ -77,10 +77,10 @@ void calculate_extrinsic()
     
     std::cout<<std::endl<<"COLLECTED IMU DATA SIZE: "<<imu_buff.size()<<std::endl;
     std::cout<<"RESULTS: "<<std::endl;
-    std::cout<<"roll: "<<roll / M_PI * 180.0<<std::endl;
+    std::cout<<"roll: "<< 0.0 * roll / M_PI * 180.0<<std::endl;
     std::cout<<"pitch: "<<pitch / M_PI * 180.0<<std::endl<<std::endl;
 
-    std::cout<<"rot_mat\n"<<ros_tools_ptr->rpy2q(Eigen::Vector3d(roll, pitch, 0.0)).toRotationMatrix()<<std::endl;
+    std::cout<<"rot_mat\n"<<ros_tools_ptr->rpy2q(Eigen::Vector3d(0.0, pitch, M_PI)).toRotationMatrix()<<std::endl;
 }
 
 int main(int argc, char** argv)
