@@ -143,6 +143,14 @@ bool nics::VdrseLib::initialization(cv::Mat& frame, cv::Mat depth)
         std::get<0>(corres_global_current) = detect_no;
         corres_global_previous = corres_global_current;
 
+        std::cout<<pose_epnp_sophus.matrix()<<std::endl<<std::endl;;
+        Sophus::SE3d temp_lala = pose_cam_inWorld_SE3 
+            * pose_cam_inGeneralBodySE3 
+            * pose_epnp_sophus;
+        Sophus::SE3d temp_lala2 = pose_cam_inWorld_SE3 
+            * pose_cam_inGeneralBodySE3 
+            * pose_global_sophus;
+    
         return true;
     }
     else
@@ -220,6 +228,7 @@ void nics::VdrseLib::solve_pnp_initial_pose(std::vector<Eigen::Vector2d> pts_2d,
           tvec(2)  
         );
 
+    // R = R * reverse_mat;
     if(tvec(2) < 0) //sometimes opencv yeilds reversed results, flip it 
     {
         R = R * reverse_mat;

@@ -43,8 +43,8 @@ void nics::VdrseLib::POI_config(ros::NodeHandle& nh)
 	// load POI_extract config
 	nh.getParam("/nics_master/EFFECTIVE_DISTANCE", EFFECTIVE_DISTANCE);     
 	nh.getParam("/nics_master/BINARY_threshold", BINARY_THRES);     
-	nh.getParam("/nics_master/frame_width", _width);
-	nh.getParam("/nics_master/frame_height", _height);
+	// nh.getParam("/nics_master/frame_width", _width);
+	// nh.getParam("/nics_master/frame_height", _height);
 }
 
 void nics::VdrseLib::camIntrinsic_config(ros::NodeHandle& nh)

@@ -43,23 +43,7 @@ find_package(decomp_util REQUIRED)
 find_package(GTSAMCMakeTools) # Include GTSAM CMake tools
 find_package(GTSAM REQUIRED) # Find GTSAM components
 
-
-# find_package(PkgConfig REQUIRED)
-# pkg_check_modules(gtk3 REQUIRED IMPORTED_TARGET gtk+-3.0)
-# pkg_search_module(gstreamer REQUIRED IMPORTED_TARGET gstreamer-1.0>=1.4)
-# pkg_search_module(gstreamer-sdp REQUIRED IMPORTED_TARGET gstreamer-sdp-1.0>=1.4)
-# pkg_search_module(gstreamer-app REQUIRED IMPORTED_TARGET gstreamer-app-1.0>=1.4)
-# pkg_search_module(gstreamer-video REQUIRED IMPORTED_TARGET gstreamer-video-1.0>=1.4)
-
-
-# pkg_get_variable(GST_VERSION gstreamer-1.0 version)
-# message(STATUS "Gstreamer version:${GST_VERSION}")
-
-
-# find_package(PCL 1.2 REQUIRED)
-
 roslaunch_add_file_check(launch)
-
 
 add_message_files(
  FILES
@@ -80,19 +64,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-# for ncnn
-# FIND_PACKAGE( OpenMP REQUIRED)
-#     if(OPENMP_FOUND)
-#       message("OPENMP FOUND")
-#       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-#       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-#       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-#     endif()
-
 set(Sophus_LIBRARIES libSophus.so)
-
-# link_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/alan_landing_planning/third_party/mosek/lib)
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/alan_landing_planning/third_party/mosek/include)
 
 include_directories(
   include
@@ -103,10 +75,7 @@ include_directories(
   ${DECOMP_UTIL_INCLUDE_DIRS}
   ${GTSAM_INCLUDE_DIR}
   ros_utilities
-
-  # ${CMAKE_CURRENT_SOURCE_DIR}/src/include/ncnn
 )
-
 
 # add_executable(vis
 #    src/vis.cpp
@@ -118,7 +87,6 @@ include_directories(
 #   ${PCL_LIBRARIES}
 #   ${OSQP_LIBRARIES}
 # )
-
 
 add_executable(data
 src/data.cpp

@@ -270,7 +270,7 @@ namespace nics
             cv::Mat frame_input;
             cv::Mat im_with_keypoints;
             cv::Mat frame_initial_thresholded;
-            int _width = 0, _height = 0;
+            // int _width = 0, _height = 0;
             
             //functions
             void camera_callback(const sensor_msgs::CompressedImage::ConstPtr & rgbimage, const sensor_msgs::Image::ConstPtr & depth);
