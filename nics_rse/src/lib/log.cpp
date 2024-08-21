@@ -37,17 +37,28 @@ void nics::VdrseLib::map_SE3_to_publish(
         * pose_cam_inGeneralBodySE3 
         * pose_led_inCamera_SE3;
     
-    Sophus::SE3d temp = pose_cam_inWorld_SE3;
+    
+    Sophus::SO3d transformation_cam_to_world = pose_cam_inWorld_SE3.so3();
     
     // std::cout<< velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
     // std::cout<<pose_cam_inGeneralBodySE3.rotationMatrix()<<std::endl<<std::endl;
     // std::cout<< pose_cam_inGeneralBodySE3.rotationMatrix() * velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
     
-    temp.translation().setZero();
-    velo_led_inWorld_SE3 = 
-        temp
-        * pose_cam_inGeneralBodySE3
-        * velo_led_inCamera_SE3;
+    velo_led_inWorld_SE3.translation() = 
+        transformation_cam_to_world.matrix()
+            * pose_cam_inGeneralBodySE3.rotationMatrix()
+            * velo_led_inCamera_SE3.translation()
+            +
+        velo_ugv_inWorld_SE3.head(3)
+            +
+        280.0 
+            * 
+            Eigen::Vector3d(
+                velo_ugv_inWorld_SE3.tail(3)
+            ).cross(
+                pose_led_inWorld_SE3.translation()
+            )
+        ;
 
     // std::cout<<pose_led_inWorld_SE3.translation()<<std::endl<<std::endl;;
     // std::cout<<pose_uav_inWorld_SE3.translation()<<std::endl<<std::endl;    

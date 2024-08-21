@@ -198,7 +198,7 @@ void nics::VdrseLib::ESO_config(ros::NodeHandle& nh)
 	C_eso.setZero();
 	C_eso.block<3,3>(0,0).setIdentity();
 
-	u_input.resize(3);
+	u_input_I.resize(3);
 	y_eso.resize(3);
 
 	Eigen::MatrixXd F = (A_eso-L_eso*C_eso);
@@ -225,10 +225,10 @@ void nics::VdrseLib::subpub_config(ros::NodeHandle& nh)
 	uav_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
 	//only used for validation stage
 		(configs.getTopicName(UAV_POSE_SUB_TOPIC), 1, &VdrseLib::uav_pose_callback, this);
-
 	ugv_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
 		(configs.getTopicName(UGV_POSE_SUB_TOPIC), 1, &VdrseLib::ugv_pose_callback, this);
-	
+	ugv_velo_sub = nh.subscribe<geometry_msgs::TwistStamped>
+		(configs.getTopicName(UGV_VELO_SUB_TOPIC), 1, &VdrseLib::ugv_velo_callback, this);
 	uav_setpt_sub = nh.subscribe<geometry_msgs::PoseStamped>
 		("/planner_server/traj/pose", 1, &VdrseLib::uav_setpt_callback, this);
 //publish
@@ -295,6 +295,11 @@ void nics::VdrseLib::ugv_pose_callback(const geometry_msgs::PoseStamped::ConstPt
     ugvpose_pub.publish(ugv_pose_msg);
 }
 
+void nics::VdrseLib::ugv_velo_callback(const geometry_msgs::TwistStamped::ConstPtr& velo)
+{
+	velo_ugv_inWorld_SE3 = twistmsg_to_velo(velo->twist);
+}
+
 void nics::VdrseLib::uav_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& pose)
 {
     pose_uav_inWorld_SE3 = posemsg_to_SE3(pose->pose);
@@ -311,7 +316,7 @@ void nics::VdrseLib::uav_setpt_callback(const geometry_msgs::PoseStamped::ConstP
 
 void nics::VdrseLib::u_callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg)
 {	
-	u_input = Eigen::Quaterniond(
+	u_input_I = Eigen::Quaterniond(
 		msg->orientation.w,
 		msg->orientation.x,
 		msg->orientation.y,	

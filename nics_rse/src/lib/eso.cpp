@@ -32,7 +32,7 @@ void nics::VdrseLib::set_dz()
     y_eso = pose_uav_inWorld_SE3.translation();
 
     dz_I = A_eso * z_I 
-        + B_eso * u_input 
+        + B_eso * u_input_I
         + L_eso * (y_eso - C_eso * z_I);
     // cout<<dz_I<<endl<<endl;
 }
@@ -66,6 +66,12 @@ void nics::VdrseLib::pub_z()
     z_dist.point.x = z_I.tail(3).x();
     z_dist.point.y = z_I.tail(3).y();
     z_dist.point.z = z_I.tail(3).z();
+
+    dist_I = Eigen::Vector3d(
+        z_dist.point.x, 
+        z_dist.point.y, 
+        z_dist.point.z
+    );
 
     z_dist_pub.publish(z_dist); 
 }

@@ -36,6 +36,7 @@
 #define DEPTH_SUB_TOPIC CAMERA_SUB_TOPIC_B
 #define UAV_POSE_SUB_TOPIC POSE_SUB_TOPIC_A
 #define UGV_POSE_SUB_TOPIC POSE_SUB_TOPIC_B
+#define UGV_VELO_SUB_TOPIC TWIST_SUB_TOPIC_A
 
 #define LED_POSE_PUB_TOPIC POSE_PUB_TOPIC_A
 #define UGV_POSE_PUB_TOPIC POSE_PUB_TOPIC_B
@@ -78,7 +79,7 @@ namespace nics
             Eigen::VectorXd cameraEX;
             
             //ros related
-            ros::Subscriber ugv_pose_sub, uav_pose_sub, uav_setpt_sub;
+            ros::Subscriber ugv_pose_sub, ugv_velo_sub, uav_pose_sub, uav_setpt_sub;
             ros::Publisher ledpose_pub, ledodom_pub, 
                            campose_pub, ugvpose_pub, uavpose_pub,
                            record_led_pub, record_uav_pub;
@@ -104,6 +105,7 @@ namespace nics
             inline void other_config(ros::NodeHandle& nh){};
 
             void ugv_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& pose);
+            void ugv_velo_callback(const geometry_msgs::TwistStamped::ConstPtr& pose);
             void uav_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& pose);
             void uav_setpt_callback(const geometry_msgs::PoseStamped::ConstPtr& pose);
             void u_callback(const mavros_msgs::AttitudeTarget::ConstPtr& msg);
@@ -111,12 +113,13 @@ namespace nics
 // eso.cpp
             Eigen::VectorXd z_I = Eigen::VectorXd::Zero(9);
             Eigen::VectorXd dz_I = Eigen::VectorXd::Zero(9);
+            Eigen::Vector3d dist_I;
             
             Eigen::MatrixXd A_eso;
             Eigen::MatrixXd B_eso;
             Eigen::MatrixXd L_eso;
             Eigen::MatrixXd C_eso;
-            Eigen::VectorXd u_input;
+            Eigen::VectorXd u_input_I;
             Eigen::VectorXd y_eso;
             double t_eso;
             double t_eso_prev;
@@ -241,6 +244,7 @@ namespace nics
             Sophus::SE3d pose_epnp_sophus, pose_depth_sophus;
             Sophus::SE3d pose_cam_inWorld_SE3;
             Sophus::SE3d pose_ugv_inWorld_SE3;
+            Sophus::Vector6d velo_ugv_inWorld_SE3;
             Sophus::SE3d pose_uav_inWorld_SE3;
             Sophus::SE3d pose_led_inWorld_SE3;
             Sophus::SE3d velo_led_inWorld_SE3;

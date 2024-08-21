@@ -89,6 +89,16 @@ namespace kf
         
         /* ================ set Predict ================ */
         inline void setPredict(); // set_XcurrentDynamicPriori
+        inline void setPredict(
+            Eigen::Vector3d posi_I,
+            Eigen::Vector3d velo_I,
+            Eigen::Vector3d u_I,
+            Eigen::Vector3d xi_I,
+            Sophus::SO3d rot_cam_inWorld,
+            Sophus::SO3d rot_cam_inGeneralBody, 
+            Eigen::Vector3d velo_ugv_I,
+            Eigen::Vector3d velo_ugv_rot_I
+        ); // set_XcurrentDynamicPriori
         inline Eigen::VectorXd dfx();
 
         /* ================ set Measurement ================ */
@@ -175,6 +185,19 @@ namespace kf
             double deltaT_,
             std::vector<Eigen::Vector3d>& pts_on_body_frame_in_corres_order,
             std::vector<Eigen::Vector2d>& pts_detected_in_corres_order
+        );
+        inline void run_AIEKF(
+            double deltaT_,
+            std::vector<Eigen::Vector3d>& pts_on_body_frame_in_corres_order,
+            std::vector<Eigen::Vector2d>& pts_detected_in_corres_order,
+            Eigen::Vector3d posi_I,
+            Eigen::Vector3d velo_I,
+            Eigen::Vector3d u_I,
+            Eigen::Vector3d xi_I,
+            Sophus::SO3d rot_cam_inWorld,
+            Sophus::SO3d rot_cam_inGeneralBody, 
+            Eigen::Vector3d velo_ugv_I,
+            Eigen::Vector3d velo_ugv_rot_I
         );
 
         bool kf_initiated = false; 
@@ -272,6 +295,44 @@ void kf::aiekf::run_AIEKF(
     
 }
 
+void kf::aiekf::run_AIEKF(
+    double deltaT_,
+    std::vector<Eigen::Vector3d>& pts_on_body_frame_in_corres_order,
+    std::vector<Eigen::Vector2d>& pts_detected_in_corres_order,
+    Eigen::Vector3d posi_I,
+    Eigen::Vector3d velo_I,
+    Eigen::Vector3d u_I,
+    Eigen::Vector3d xi_I,
+    Sophus::SO3d rot_cam_inWorld,
+    Sophus::SO3d rot_cam_inGeneralBody, 
+    Eigen::Vector3d velo_ugv_I,
+    Eigen::Vector3d velo_ugv_rot_I
+)
+{
+    // ROS_GREEN_STREAM("runAIEKF");
+    this->deltaT = deltaT_;
+
+    setPredict(
+        posi_I,
+        velo_I,
+        u_I,
+        xi_I,
+        rot_cam_inWorld,
+        rot_cam_inGeneralBody,
+        velo_ugv_I,
+        velo_ugv_rot_I
+    ); 
+
+    setMeasurement(pts_on_body_frame_in_corres_order,pts_detected_in_corres_order);
+    
+    setPreOptimize();
+    
+    doOptimize();
+    
+    setPostOptimize();
+    
+}
+
 /*=======set Predict=======*/
 void kf::aiekf::setPredict()
 {
@@ -285,6 +346,59 @@ void kf::aiekf::setPredict()
 
     XcurrentDynamicPriori.V_SE3 = 
         XpreviousPosterori.V_SE3 * Sophus::SE3d(Eigen::Matrix3d::Identity(), dx.tail(3));
+
+    setDFJacobianDynamic(
+        F_k,
+        XpreviousPosterori,
+        false
+    );
+
+    XcurrentDynamicPriori.PCov = 
+        F_k * XpreviousPosterori.PCov * F_k.transpose() + F_k * Q_k * F_k.transpose();
+}
+
+void kf::aiekf::setPredict(
+    Eigen::Vector3d posi_I,
+    Eigen::Vector3d velo_I,
+    Eigen::Vector3d u_I,
+    Eigen::Vector3d xi_I,
+    Sophus::SO3d rot_cam_inWorld,
+    Sophus::SO3d rot_cam_inGeneralBody, 
+    Eigen::Vector3d velo_ugv_I,
+    Eigen::Vector3d velo_ugv_rot_I
+)
+{
+    ROS_GREEN_STREAM("setPredict w/ Dynamics");
+
+    Eigen::Vector3d posi_predict_I = 
+        posi_I + deltaT * velo_I + 0.5 * (u_I + xi_I) * deltaT * deltaT;
+    Eigen::Vector3d velo_predict_I =
+        velo_I + deltaT * (u_I + xi_I);
+
+    Eigen::VectorXd dx = dfx() * deltaT; // first 6 element: se(3) of pose
+                                   // last 3 element: velocity
+
+    XcurrentDynamicPriori.X_SE3 = 
+        Sophus::SE3d::exp(dx.head(6)) * XpreviousPosterori.X_SE3 ;
+    // XcurrentDynamicPriori.X_SE3.translation(); 
+    Eigen::Vector3d temp_posi
+        = (rot_cam_inWorld * rot_cam_inWorld).inverse() * posi_predict_I;
+
+    ROS_GREEN_STREAM("VDRSE POSI_C!");
+    std::cout<<temp_posi<<std::endl<<std::endl;
+    std::cout<<XcurrentDynamicPriori.X_SE3.translation()<<std::endl<<std::endl;
+
+    XcurrentDynamicPriori.V_SE3 = 
+        XpreviousPosterori.V_SE3 * Sophus::SE3d(Eigen::Matrix3d::Identity(), dx.tail(3));
+    // XcurrentDynamicPriori.V_SE3.translation()
+    Eigen::Vector3d temp_velo 
+        = 
+        (rot_cam_inWorld * rot_cam_inWorld).inverse() 
+            * 
+        (velo_predict_I - velo_ugv_I - velo_ugv_rot_I);
+    ROS_CYAN_STREAM("VDRSE VELO_C!");
+    std::cout<<temp_velo<<std::endl<<std::endl;
+    std::cout<<XcurrentDynamicPriori.V_SE3.translation()<<std::endl<<std::endl;
 
     setDFJacobianDynamic(
         F_k,

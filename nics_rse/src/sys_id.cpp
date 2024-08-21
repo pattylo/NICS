@@ -28,60 +28,26 @@
 // static ros_utilities ros_tools;
 static std::shared_ptr<ros_utilities> ros_tools_ptr;
 
-static std::deque<Eigen::Vector3d> imu_buff;
-static std::mutex imu_buff_manage;
-static Eigen::Matrix<double, 3, 3> R_cam_to_body;
+static std::deque<double> thrust_buff;
+static std::mutex thrust_buff_manage;
+static double thrust_avg;
 
-static Eigen::Vector3d R_Euler;
-static Eigen::Vector3d acc_B;
-static double pitch, roll;
-
-static Eigen::Vector3d acc_bias;
-
-void imu_callback(
-    const sensor_msgs::Imu::ConstPtr& msg
+void thrust_callback(
+    const mavros_msgs::AttitudeTarget::ConstPtr& msg
 )
 {
-    imu_buff.push_back(
-        Eigen::Vector3d(
-            msg->linear_acceleration.x,
-            msg->linear_acceleration.y,
-            msg->linear_acceleration.z
-        ) 
-        - 
-        acc_bias
+    thrust_buff.push_back(
+        msg->thrust
     );  
 }
 
-void calculate_extrinsic()
+void calculate_thrust()
 {
-    Eigen::Vector3d acc_mean, imu_cov;
+    double thrust_mean;
 
-    ros_tools_ptr->ComputeMean(imu_buff, acc_mean);
-
-    acc_B = R_cam_to_body * acc_mean;
-
-    std::cout<<acc_B<<std::endl<<std::endl;
-
-    for (int i = 0; i < acc_B.size(); i++)
-        if(abs(acc_B(i)) < 0.1)
-            acc_B(i) = 0;
-
-    std::cout<<acc_B<<std::endl<<std::endl;
-
-    roll = atan2(acc_B.y(), acc_B.z());
-    pitch = atan2( 
-        - acc_B.x(), 
-        sqrt(pow(acc_B.y(),2) + pow(acc_B.z(),2))
-    );
-    
-    std::cout<<std::endl<<"COLLECTED IMU DATA SIZE: "<<imu_buff.size()<<std::endl;
-    std::cout<<"RESULTS: "<<std::endl;
-    std::cout<<"roll: "<<roll / M_PI * 180.0<<std::endl;
-    std::cout<<"pitch: "<<pitch / M_PI * 180.0<<std::endl<<std::endl;
-
-    std::cout<<"rot_mat\n"<<ros_tools_ptr->rpy2q(Eigen::Vector3d(roll, pitch, 0.0)).toRotationMatrix()<<std::endl;
-}
+    ros_tools_ptr->ComputeMeanScalar(thrust_buff, thrust_mean);
+    std::cout<<"Thrust Mean: "<<thrust_mean<<std::endl;
+}  
 
 int main(int argc, char** argv)
 {
@@ -90,23 +56,15 @@ int main(int argc, char** argv)
 
     ros_tools_ptr = std::make_shared<ros_utilities>();
 
-    ros::Subscriber imu_msg_sub = 
-        nh.subscribe<sensor_msgs::Imu>(
-            "/camera/imu", 
+    ros::Subscriber input_msg_sub = 
+        nh.subscribe<mavros_msgs::AttitudeTarget>(
+            "/mavros/setpoint_raw/attitude", 
             1, 
-            &imu_callback
+            &thrust_callback
     );
 
-    acc_bias = Eigen::Vector3d(0.121071, -0.136015, 0.0312915);
-    acc_bias.setZero();
-    
-    R_cam_to_body << 
-        0,0,1,
-        -1,0,0,
-        0,-1,0;
-
     ros::spin();
-    calculate_extrinsic();
+    calculate_thrust();
 
     return 0;
 

@@ -87,3 +87,11 @@ add_executable(camera_extrinsic
 target_link_libraries(camera_extrinsic
   ${catkin_LIBRARIES}
 )
+
+add_executable(sys_id
+  src/sys_id.cpp
+)
+
+target_link_libraries(sys_id
+  ${catkin_LIBRARIES}
+)

@@ -81,8 +81,6 @@ void msg_callback(
         + 
         velo_ugv ;
         // + 
-        // rot_ugv.rotationMatrix()
-        // *
         // 280 
         //     * Eigen::Vector3d(
         //         ugv_vel.twist.angular.x,

@@ -57,7 +57,7 @@ void calculate_extrinsic()
 {
     Eigen::Vector3d acc_mean, imu_cov;
 
-    ros_tools_ptr->ComputeMean(imu_buff, acc_mean);
+    ros_tools_ptr->ComputeMeanVector(imu_buff, acc_mean);
 
     acc_B = R_cam_to_body * acc_mean;
 
