@@ -20,6 +20,11 @@ TOPICLIST:
     TOPICNAME: "/vrpn_client_node/gh034_car/pose" 
     SUBORPUB: 0
   
+  - TOPICTYPE: "TWIST_SUB_TOPIC_A"
+    # TOPICNAME: "/vrpn_client_node/gh034_scout_fast/pose" 
+    TOPICNAME: "/vrpn_client_node/gh034_car/twist" 
+    SUBORPUB: 0
+  
   #pub
   - TOPICTYPE: "POSE_PUB_TOPIC_A"
     TOPICNAME: "/nics_rse/LED/pose"

@@ -132,6 +132,7 @@ namespace nics
             ros::Timer eso_spinner;
 
             bool eso_activated = false;
+            bool DRSE_ON = false;
 
             void eso_mainspinCallback(const ros::TimerEvent &e);
             

@@ -37,6 +37,16 @@ void nics::VdrseLib::map_SE3_to_publish(
         * pose_cam_inGeneralBodySE3 
         * pose_led_inCamera_SE3;
     
+    // ROS_RED_STREAM("IN LOG");
+    // std::cout<<pose_led_inCamera_SE3.translation()<<std::endl<<std::endl;
+    // std::cout<<
+    //     (pose_cam_inWorld_SE3 * pose_cam_inGeneralBodySE3).inverse().matrix3x4()
+    //     *
+    //     (Eigen::Vector4d() 
+    //         << 
+    //         pose_led_inWorld_SE3.translation(),1).finished()
+    // <<std::endl<<std::endl;
+    
     
     Sophus::SO3d transformation_cam_to_world = pose_cam_inWorld_SE3.so3();
     
@@ -85,19 +95,19 @@ void nics::VdrseLib::map_SE3_to_publish(
     
     ledodom_pub.publish(led_odom_estimated_msg);
 
-    std::cout<<
-        pose_led_inWorld_SE3.translation() 
-            - 
-        pose_uav_inWorld_SE3.translation()
-    <<std::endl<<std::endl;
+    // std::cout<<
+    //     pose_led_inWorld_SE3.translation() 
+    //         - 
+    //     pose_uav_inWorld_SE3.translation()
+    // <<std::endl<<std::endl;
 
-    std::cout<<
-        pose_ugv_inWorld_SE3.rotationMatrix().inverse() 
-            * pose_led_inWorld_SE3.translation()
-            -
-        pose_ugv_inWorld_SE3.rotationMatrix().inverse() 
-            * pose_uav_inWorld_SE3.translation()
-    <<std::endl<<std::endl;
+    // std::cout<<
+    //     pose_ugv_inWorld_SE3.rotationMatrix().inverse() 
+    //         * pose_led_inWorld_SE3.translation()
+    //         -
+    //     pose_ugv_inWorld_SE3.rotationMatrix().inverse() 
+    //         * pose_uav_inWorld_SE3.translation()
+    // <<std::endl<<std::endl;
 }
 
 void nics::VdrseLib::set_image_to_publish(double freq, const sensor_msgs::CompressedImageConstPtr & rgbmsg)

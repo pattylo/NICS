@@ -190,25 +190,33 @@ void nics::VdrseLib::apiKF(int DOKF)
         break;
 
     case kfNORMALKF:
-        run_AIEKF(
-            led_pose_header.stamp.toSec() - led_pose_header_previous.stamp.toSec(),
-            pts_on_body_frame_in_corres_order, 
-            pts_detected_in_corres_order,
-            pose_led_inWorld_SE3.translation(),
-            velo_led_inWorld_SE3.translation(),
-            u_input_I,
-            dist_I,
-            pose_cam_inWorld_SE3.so3(),
-            pose_cam_inGeneralBodySE3.so3(),
-            velo_ugv_inWorld_SE3.head(3),
-            280.0 
-                * 
-                Eigen::Vector3d(
-                    velo_ugv_inWorld_SE3.tail(3)
-                ).cross(
-                    pose_led_inWorld_SE3.translation()
-                )
-        );
+        if(DRSE_ON)
+            run_AIEKF(
+                led_pose_header.stamp.toSec() - led_pose_header_previous.stamp.toSec(),
+                pts_on_body_frame_in_corres_order, 
+                pts_detected_in_corres_order,
+                pose_led_inWorld_SE3.translation(),
+                velo_led_inWorld_SE3.translation(),
+                u_input_I,
+                dist_I,
+                pose_cam_inWorld_SE3,
+                pose_cam_inGeneralBodySE3,
+                velo_ugv_inWorld_SE3.head(3),
+                280.0 
+                    * 
+                    Eigen::Vector3d(
+                        velo_ugv_inWorld_SE3.tail(3)
+                    ).cross(
+                        pose_led_inWorld_SE3.translation()
+                    )
+            );
+        else
+            run_AIEKF(
+                led_pose_header.stamp.toSec() - led_pose_header_previous.stamp.toSec(),
+                pts_on_body_frame_in_corres_order, 
+                pts_detected_in_corres_order
+            );
+
 
         pose_global_sophus = XcurrentPosterori.X_SE3;
         velo_global_sophus = XcurrentPosterori.V_SE3;

@@ -27,7 +27,7 @@
 
 #include "nics_rse/vdrse_log.h"
 
-static ros_utilities ros_tools;
+static std::shared_ptr<ros_utilities> ros_tools_ptr;
 
 static std::string log_file_1;
 static std::string log_file_2;
@@ -65,39 +65,39 @@ void msg_callback(
 {    
     std::ofstream save(log_file_1, std::ios::app);
 
-    Eigen::Vector3d posi_est = Eigen::Vector3d(ledmsg->px, ledmsg->py, ledmsg->pz);
+    // Eigen::Vector3d posi_est = Eigen::Vector3d(ledmsg->px, ledmsg->py, ledmsg->pz);
     
     
-    Sophus::SE3d rot_ugv = ros_tools.posemsg_to_SE3(ugv_pose.pose);
+    // Sophus::SE3d rot_ugv = ros_tools.posemsg_to_SE3(ugv_pose.pose);
 
-    Eigen::Vector3d velo_est = Eigen::Vector3d(ledmsg->vx, ledmsg->vy, ledmsg->vz);
-    Eigen::Vector3d velo_ugv = Eigen::Vector3d(ugv_vel.twist.linear.x, ugv_vel.twist.linear.y, 0.0);
-    std::cout<<ugv_vel.twist.angular.z * 280<<std::endl<<std::endl;
-    // std::cout<<velo_est * ugv_vel.twist.angular.z * 280<<std::endl<<std::endl;
-    std::cout<<rot_ugv.rotationMatrix().inverse() * posi_est<<std::endl<<std::endl;
+    // Eigen::Vector3d velo_est = Eigen::Vector3d(ledmsg->vx, ledmsg->vy, ledmsg->vz);
+    // Eigen::Vector3d velo_ugv = Eigen::Vector3d(ugv_vel.twist.linear.x, ugv_vel.twist.linear.y, 0.0);
+    // std::cout<<ugv_vel.twist.angular.z * 280<<std::endl<<std::endl;
+    // // std::cout<<velo_est * ugv_vel.twist.angular.z * 280<<std::endl<<std::endl;
+    // std::cout<<rot_ugv.rotationMatrix().inverse() * posi_est<<std::endl<<std::endl;
 
-    velo_est = 
-        velo_est 
-        + 
-        velo_ugv ;
-        // + 
-        // 280 
-        //     * Eigen::Vector3d(
-        //         ugv_vel.twist.angular.x,
-        //         ugv_vel.twist.angular.y,
-        //         ugv_vel.twist.angular.z
-        //     ).cross(rot_ugv.rotationMatrix().inverse() * posi_est);
+    // velo_est = 
+    //     velo_est 
+    //     + 
+    //     velo_ugv ;
+    //     // + 
+    //     // 280 
+    //     //     * Eigen::Vector3d(
+    //     //         ugv_vel.twist.angular.x,
+    //     //         ugv_vel.twist.angular.y,
+    //     //         ugv_vel.twist.angular.z
+    //     //     ).cross(rot_ugv.rotationMatrix().inverse() * posi_est);
 
-    std::cout<<"percentage here:"<< 
-        (
-            280 
-            * Eigen::Vector3d(
-                ugv_vel.twist.angular.x,
-                ugv_vel.twist.angular.y,
-                ugv_vel.twist.angular.z
-            ).cross(rot_ugv.rotationMatrix().inverse() * posi_est)
-        ).norm()
-        / velo_est.norm() * 100 <<std::endl<<std::endl;;
+    // std::cout<<"percentage here:"<< 
+    //     (
+    //         280 
+    //         * Eigen::Vector3d(
+    //             ugv_vel.twist.angular.x,
+    //             ugv_vel.twist.angular.y,
+    //             ugv_vel.twist.angular.z
+    //         ).cross(rot_ugv.rotationMatrix().inverse() * posi_est)
+    //     ).norm()
+    //     / velo_est.norm() * 100 <<std::endl<<std::endl;;
     // std::cout<<"velo"<<std::endl;
     // std::cout<<rot_ugv.rotationMatrix().inverse() * posi_est * ugv_vel.twist.angular.z * 280<<std::endl<<std::endl;
 
@@ -116,12 +116,12 @@ void msg_callback(
          << ledmsg->yaw   << ","
          << ledmsg->orientation << ","
          
-        //  << ledmsg->vx << "," 
-        //  << ledmsg->vy << "," 
-        //  << ledmsg->vz << "," 
-         << velo_est.x() << "," 
-         << velo_est.y() << "," 
-         << velo_est.z() << "," 
+         << ledmsg->vx << "," 
+         << ledmsg->vy << "," 
+         << ledmsg->vz << "," 
+        //  << velo_est.x() << "," 
+        //  << velo_est.y() << "," 
+        //  << velo_est.z() << "," 
 
          << ledmsg->set_px << ","
          << ledmsg->set_py << ","
@@ -172,8 +172,8 @@ int main(int argc, char** argv)
     typedef message_filters::Synchronizer<MySyncPolicy> sync;//(MySyncPolicy(10), subimage, subdepth);
     boost::shared_ptr<sync> sync_;   
 
-    subled.subscribe(nh, "/alan_state_estimation/led/led_log", 1);                
-    subuav.subscribe(nh, "/alan_state_estimation/led/uav_log", 1);                
+    subled.subscribe(nh, "/nics_rse/led_log", 1);                
+    subuav.subscribe(nh, "/nics_rse/uav_log", 1);                
     sync_.reset(new sync( MySyncPolicy(10), subled, subuav));
     sync_->registerCallback(boost::bind(&msg_callback, _1, _2));   
 
@@ -183,9 +183,9 @@ int main(int argc, char** argv)
     ros::Subscriber ugv_sub = 
         nh.subscribe<geometry_msgs::PoseStamped>(ugv_topic, 1, &ugv_callback);
     ros::Subscriber ugv_vel_sub = 
-        nh.subscribe<geometry_msgs::TwistStamped>("/vrpn_client_node/gh034_scout_fast/twist", 1, &ugv_vel_callback);
+        nh.subscribe<geometry_msgs::TwistStamped>("/vrpn_client_node/gh034_car/twist", 1, &ugv_vel_callback);
     ros::Subscriber uav_vel_sub = 
-        nh.subscribe<geometry_msgs::TwistStamped>("/uav/mavros/local_position/velocity_local", 1, &uav_vel_callback);
+        nh.subscribe<geometry_msgs::TwistStamped>("/mavros/local_position/velocity_local", 1, &uav_vel_callback);
     
 
     std::string path;

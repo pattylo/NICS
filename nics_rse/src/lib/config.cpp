@@ -43,8 +43,6 @@ void nics::VdrseLib::POI_config(ros::NodeHandle& nh)
 	// load POI_extract config
 	nh.getParam("/nics_master/EFFECTIVE_DISTANCE", EFFECTIVE_DISTANCE);     
 	nh.getParam("/nics_master/BINARY_threshold", BINARY_THRES);     
-	// nh.getParam("/nics_master/frame_width", _width);
-	// nh.getParam("/nics_master/frame_height", _height);
 }
 
 void nics::VdrseLib::camIntrinsic_config(ros::NodeHandle& nh)
@@ -160,9 +158,12 @@ void nics::VdrseLib::KF_config(ros::NodeHandle& nh)
 	nh.getParam("/nics_master/CONVERGE_THRESHOLD", CONVERGE_THRESHOLD);
 
 	nh.getParam("/nics_master/KF_ON", KF_ON);
+	nh.getParam("/nics_master/DRSE_ON", DRSE_ON);
 
 	if(KF_ON)        
-		ROS_GREEN_STREAM("KF IS ON!");                
+		ROS_GREEN_STREAM("KF IS ON!");  
+	if(DRSE_ON)
+		ROS_GREEN_STREAM("DRSE IS ON!");  
 
 	Q_init.resize(kf_size, kf_size);
 	Q_init.setIdentity();

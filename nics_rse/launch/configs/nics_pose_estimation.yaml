@@ -22,23 +22,7 @@ cam_ugv_extrinsics: [
 # ] 
 
     
-
-cam_ugv_euclidean_extrinsics_d455: [0.54446, 0.0, 0.0307356, -0.248458, -25.3396, 180.0] #xyzrpy
-
-
-cam_FOV_H: 90
-cam_FOV_V: 65
-
-final_corridor_height: 0.60
-final_corridor_length: 1.2
-
-landing_horizontal: 1.6
-
-LED_r_number: 3 #2
-LED_g_number: 3
-
-
-LED_temp: -0.04
+LED_temp: 0.0
 LED_positions:
   - x: -0.10775
     y: -0.09875
@@ -60,33 +44,6 @@ LED_positions:
     y: 0.09875
     z: 0.031
 
-
-
-
-ARUCO_positions:
-  - x: 0.0
-    y: 0.4
-    z: -0.055
-  - x: 0.0
-    y: -0.0225
-    z: -0.055
-  - x: 0.0
-    y: -0.0225
-    z: -0.010
-  - x: 0.0
-    y: 0.0225
-    z: -0.010
-
-weightpath:
-  "/home/patty/alan_ws/src/alan/offb/src/include/yolo/uav_new.weights"
-
-cfgpath:
-  "/home/patty/alan_ws/src/alan/offb/src/include/yolo/uav_new.cfg"
-
-classnamepath:
-  "/home/patty/alan_ws/src/alan/offb/src/include/yolo/uav.names"
-
-
 MAD_dilate:
   10.0
 MAD_max:
@@ -96,18 +53,6 @@ MAD_max:
 BINARY_threshold:
  140
 
-frame_width:
- 848
-frame_height:
- 480
-
-failsafe_threshold:
- 0.20
-
-failsafe_on:
- 1 
- #1 on, 
- #0 off
 
 # KF-related
 Q_val:
@@ -133,6 +78,13 @@ CONVERGE_THRESHOLD:
 KF_ON:
  true
 
+DRSE_ON:
+  false
+ALL_INPUT:
+  false
+
+
 
 hover_thrust:
   0.263512
+
