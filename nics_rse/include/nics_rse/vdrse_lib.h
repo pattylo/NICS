@@ -132,7 +132,6 @@ namespace nics
             ros::Timer eso_spinner;
 
             bool eso_activated = false;
-            bool DRSE_ON = false;
 
             void eso_mainspinCallback(const ros::TimerEvent &e);
             
@@ -198,6 +197,9 @@ namespace nics
             double image_pre_ms = 0;
             double corres_ms = 0;
             double iekf_ms = 0;
+
+            bool DRSE_ON = false;
+            bool ALL_INPUT_ON = false;
 
             //functions
             void map_SE3_to_publish(

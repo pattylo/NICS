@@ -12,7 +12,6 @@ file1 = '../thesis/0821_rse_uav_' + dataset_name + "_" + no + '.csv'
 file2 = '../thesis/0821_rse_led_' + dataset_name + "_" + no + '.csv'
 
 
-
 data1 = pd.read_csv(file1, skiprows=1)
 data2 = pd.read_csv(file2, skiprows=1)
 

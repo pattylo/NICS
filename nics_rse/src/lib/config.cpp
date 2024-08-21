@@ -159,11 +159,23 @@ void nics::VdrseLib::KF_config(ros::NodeHandle& nh)
 
 	nh.getParam("/nics_master/KF_ON", KF_ON);
 	nh.getParam("/nics_master/DRSE_ON", DRSE_ON);
+	nh.getParam("/nics_master/ALL_INPUT_ON", ALL_INPUT_ON);
 
 	if(KF_ON)        
 		ROS_GREEN_STREAM("KF IS ON!");  
+	else
+		ROS_RED_STREAM("KF IS OFF!");
 	if(DRSE_ON)
-		ROS_GREEN_STREAM("DRSE IS ON!");  
+	{
+		ROS_GREEN_STREAM("DRSE IS ON!");
+		if(ALL_INPUT_ON)
+			ROS_GREEN_STREAM("ALL_INPUT_ON IS ON!");
+		else
+			ROS_RED_STREAM("ALL_INPUT_ON IS OFF!");
+	}
+	else
+		ROS_RED_STREAM("DRSE IS OFF!");
+	
 
 	Q_init.resize(kf_size, kf_size);
 	Q_init.setIdentity();

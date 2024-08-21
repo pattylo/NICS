@@ -190,6 +190,13 @@ void nics::VdrseLib::apiKF(int DOKF)
         break;
 
     case kfNORMALKF:
+        if(!ALL_INPUT_ON)
+        {   
+            dist_I.setZero();
+            std::cout<<"NO DIST"<<std::endl;
+        }
+            
+
         if(DRSE_ON)
             run_AIEKF(
                 led_pose_header.stamp.toSec() - led_pose_header_previous.stamp.toSec(),

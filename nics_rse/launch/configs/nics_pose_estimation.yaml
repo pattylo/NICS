@@ -75,12 +75,12 @@ OPT_MAX_ITERATION:
  25
 CONVERGE_THRESHOLD:
  0.01
-KF_ON:
- true
 
+KF_ON:
+  false
 DRSE_ON:
   false
-ALL_INPUT:
+ALL_INPUT_ON:
   false
 
 

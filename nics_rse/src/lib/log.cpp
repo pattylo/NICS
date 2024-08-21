@@ -37,17 +37,6 @@ void nics::VdrseLib::map_SE3_to_publish(
         * pose_cam_inGeneralBodySE3 
         * pose_led_inCamera_SE3;
     
-    // ROS_RED_STREAM("IN LOG");
-    // std::cout<<pose_led_inCamera_SE3.translation()<<std::endl<<std::endl;
-    // std::cout<<
-    //     (pose_cam_inWorld_SE3 * pose_cam_inGeneralBodySE3).inverse().matrix3x4()
-    //     *
-    //     (Eigen::Vector4d() 
-    //         << 
-    //         pose_led_inWorld_SE3.translation(),1).finished()
-    // <<std::endl<<std::endl;
-    
-    
     Sophus::SO3d transformation_cam_to_world = pose_cam_inWorld_SE3.so3();
     
     // std::cout<< velo_led_inCamera_SE3.translation()<<std::endl<<std::endl;
@@ -165,10 +154,9 @@ void nics::VdrseLib::log(double ms)
     logdata_entry_led.vy = velo_led_inWorld_SE3.translation().y();
     logdata_entry_led.vz = velo_led_inWorld_SE3.translation().z();
     
-    Eigen::Vector3d rpy ;
-    // = q2rpy(
-        // Eigen::Quaterniond(pose_led_inWorld_SE3.rotationMatrix())
-    // );
+    Eigen::Vector3d rpy = q2rpy(
+        pose_led_inWorld_SE3.unit_quaternion()
+    );
 
     logdata_entry_led.roll  = rpy(0);
     logdata_entry_led.pitch = rpy(1);
