@@ -1,8 +1,8 @@
 <launch>
     <node name="data" pkg="nics_visualization" type="data" output="screen">
         <param name="/log_path" type="string" value="/home/patty/nics_ws/src/NICS/nics_visualization/logs/thesis/"/>
-        <param name="/filename1" type="string" value="0821_rse_led_circle_D.csv"/>
-        <param name="/filename2" type="string" value="0821_rse_uav_circle_D.csv"/>
+        <param name="/filename1" type="string" value="0821_rse_led_circle_A.csv"/>
+        <param name="/filename2" type="string" value="0821_rse_uav_circle_A.csv"/>
         <!-- <param name="/ugv_topic" type="string" value="/vrpn_client_node/gh034_scout_fast/pose"/> -->
         <param name="/ugv_topic" type="string" value="/vrpn_client_node/gh034_car/pose"/>
     </node>         

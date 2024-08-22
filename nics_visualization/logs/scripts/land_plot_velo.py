@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import IsolationForest
 import numpy as np
 
-no = ""
-dataset_name = "circle"
+no = "D"
+dataset_name = "linear"
 print(dataset_name + "_" + no)
 
 # Read the CSV files, skipping the first line

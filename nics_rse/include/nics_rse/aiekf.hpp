@@ -906,6 +906,12 @@ void kf::aiekf::setMisc()
 {
     XprePreviousPosterori = XpreviousPosterori;
     XpreviousPosterori = XcurrentPosterori;
+
+    if(!KF_ON)
+    {
+        std::cout<<"hi setMisc"<<std::endl;
+        XcurrentPosterori.V_SE3.translation() = current_velo;
+    }
 }
 
 void kf::aiekf::setAdaptiveQ()

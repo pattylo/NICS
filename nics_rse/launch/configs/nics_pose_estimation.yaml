@@ -77,11 +77,11 @@ CONVERGE_THRESHOLD:
  0.01
 
 KF_ON:
-  false
+  true
 DRSE_ON:
-  false
+  true
 ALL_INPUT_ON:
-  false
+  true
 
 
 
