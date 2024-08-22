@@ -5,14 +5,14 @@ PID_gain:
     z: 1.0
     yaw: 0.0
 #ki
-  - x: 0.1
-    y: 0.1
+  - x: 0.2
+    y: 0.2
     z: 0.0
     yaw: 0.00
 #kd
-  - x: 0.5
-    y: 0.5
-    z: 0.65
+  - x: 0.9
+    y: 0.9
+    z: 0.9
     yaw: 0.0
 
 FF_gain:
@@ -31,4 +31,4 @@ take_off_z: 1.0
 hover_thrust: 0.5656
 pub_freq: 50
 
-obs_on: true
+obs_on: false

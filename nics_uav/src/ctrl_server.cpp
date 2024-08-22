@@ -34,7 +34,7 @@ ctrl_server::ctrl_server(ros::NodeHandle& _nh)
     uav_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
             ("/mavros/local_position/pose", 1, &ctrl_server::poseCallback, this);
     dist_sub = nh.subscribe<geometry_msgs::PointStamped>
-            ("/rse/dist", 1, &ctrl_server::distCallback, this);
+            ("/nics_rse/dist", 1, &ctrl_server::distCallback, this);
     
     // check whether pose instantiate
     ros::Rate rate(20);
@@ -55,7 +55,7 @@ ctrl_server::ctrl_server(ros::NodeHandle& _nh)
     ctrlU_pub = nh.advertise<mavros_msgs::AttitudeTarget>
             ("/mavros/setpoint_raw/attitude", 1, true);
     pose_pub = nh.advertise<geometry_msgs::PoseStamped>
-            ("/mavros/setpoint_position/local", 1, true);
+            ("/nics_uav/setpt", 1, true);
     
     // timer
     mainspin_timer = nh.createTimer(
@@ -456,6 +456,14 @@ void ctrl_server::ctrl_pub()
     ctrlU_msg.thrust = final_U(3);
 
     ctrlU_pub.publish(ctrlU_msg);
+
+    setpoint_msg.header.frame_id = "world";
+    setpoint_msg.header.stamp = ros::Time::now();
+    setpoint_msg.pose.position.x = target_traj_pose(0);
+    setpoint_msg.pose.position.y = target_traj_pose(1);
+    setpoint_msg.pose.position.z = target_traj_pose(2);
+
+    pose_pub.publish(setpoint_msg);
 }
 
 bool ctrl_server::get_ready()

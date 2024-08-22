@@ -85,6 +85,8 @@ ALL_INPUT_ON:
 
 
 
+# hover_thrust:
+  # 0.263512
 hover_thrust:
-  0.263512
+  0.565914
 

@@ -85,6 +85,7 @@ private:
     // publisher
     ros::Publisher ctrlU_pub, pose_pub;
     mavros_msgs::AttitudeTarget ctrlU_msg;
+    geometry_msgs::PoseStamped setpoint_msg;
 
 
     // timer

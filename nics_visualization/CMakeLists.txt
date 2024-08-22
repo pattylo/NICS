@@ -100,6 +100,19 @@ add_dependencies(
     data
     nics_rse_generate_messages_cpp
   )
+
+add_executable(ctrl_log
+  src/ctrl_log.cpp
+)
+  
+target_link_libraries(ctrl_log
+  ${catkin_LIBRARIES}
+)
+  
+add_dependencies(
+  ctrl_log
+  nics_rse_generate_messages_cpp
+)
 ###################################################
 
 
