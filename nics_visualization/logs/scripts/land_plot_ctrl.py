@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-no = "A"
+no = "C"
 print(no)
 
 file_path = '../thesis/0821_ctrl_tracking_' + no + ".csv"
@@ -49,33 +49,37 @@ print(np.var(combined_errors))
 # Plot the data
 fig, axs = plt.subplots(3, 1, figsize=(15, 10))
 t = data['t'] - data['t'][0]
-plt.rcParams.update({'font.size': 14})  # Set the font size globally
+plt.rcParams.update({'font.size': 18})  # Set the font size globally
+plt.rcParams.update({'font.size': 18, 'xtick.labelsize': 18, 'ytick.labelsize': 18})
 
 
 # Plot t vs set_x and t vs uav_x
-axs[0].plot(t, data['set_x'], label='set_x')
-axs[0].plot(t, data['uav_x'], label='uav_x')
-axs[0].set_xlabel('Time (t)')
-axs[0].set_ylabel('X (m)')
-axs[0].legend()
+axs[0].plot(t, data['set_x'], label='set_x', linewidth=2.5)
+axs[0].plot(t, data['uav_x'], label='uav_x', linewidth=2.5)
+axs[0].set_xlabel('Time (t)',fontsize=18)
+axs[0].set_ylabel('X (m)',fontsize=18)
+axs[0].tick_params(axis='both', which='major', labelsize=18)
+axs[0].legend(loc='lower right',)
 axs[0].set_title('Tracking Plot')
 # axs[0].set_ylim([0.4, 1.4])
 
 # Plot t vs set_y and t vs uav_y
-axs[1].plot(t, data['set_y'], label='set_y')
-axs[1].plot(t, data['uav_y'], label='uav_y')
-axs[1].set_xlabel('Time (t)')
-axs[1].set_ylabel('Y (m)')
-axs[1].legend()
+axs[1].plot(t, data['set_y'], label='set_y', linewidth=2.5)
+axs[1].plot(t, data['uav_y'], label='uav_y', linewidth=2.5)
+axs[1].set_xlabel('Time (t)',fontsize=18)
+axs[1].set_ylabel('Y (m)',fontsize=18)
+axs[1].tick_params(axis='both', which='major', labelsize=18)
+axs[1].legend(loc='lower right',)
 # axs[1].set_title('t vs set_y and uav_y')
 # axs[1].set_ylim([0.4, 1.4])
 
 # Plot t vs set_z and t vs uav_z
-axs[2].plot(t, data['set_z'], label='set_z')
-axs[2].plot(t, data['uav_z'], label='uav_z')
-axs[2].set_xlabel('Time (t)')
-axs[2].set_ylabel('Z (m)')
-axs[2].legend()
+axs[2].plot(t, data['set_z'], label='set_z', linewidth=2.5)
+axs[2].plot(t, data['uav_z'], label='uav_z', linewidth=2.5)
+axs[2].set_xlabel('Time (t)',fontsize=18)
+axs[2].set_ylabel('Z (m)',fontsize=18)
+axs[2].tick_params(axis='both', which='major', labelsize=18)
+axs[2].legend(loc='lower right',)
 # axs[2].set_title('t vs set_z and uav_z')
 # axs[2].set_ylim([0.8, 1.4])
 
@@ -109,13 +113,14 @@ plt.savefig('track_'+ no + '.pdf', format='pdf')
 # plt.show()
 
 # Plot combined e_x, e_y, e_z
-plt.figure(figsize=(10, 5))
-plt.plot(t, data['e_x'], label='e_x', color='purple')
-plt.plot(t, data['e_y'], label='e_y', color='green')
+plt.figure(figsize=(15, 5))
+plt.plot(t, data['e_x'], label='e_x', color='purple', linewidth=2.5)
+plt.plot(t, data['e_y'], label='e_y', color='green', linewidth=2.5)
 plt.plot(t, data['e_z'], label='e_z', color='red')
-plt.xlabel('Time (t)')
-plt.ylabel('Error (m)')
+plt.xlabel('Time (t)',fontsize=18)
+plt.ylabel('Error (m)',fontsize=18)
 plt.legend()
 plt.title('Error Plot')
+plt.tight_layout()
 plt.savefig('error_'+ no + '.pdf', format='pdf')
 # plt.show()

@@ -10,8 +10,8 @@ TOPICLIST:
     SUBORPUB: 0
   
   - TOPICTYPE: "POSE_SUB_TOPIC_A"
-    # TOPICNAME: "/mavros/vision_pose/pose" 
-    TOPICNAME: "/mavros/local_position/pose" 
+    TOPICNAME: "/mavros/vision_pose/pose" 
+    # TOPICNAME: "/mavros/local_position/pose" 
     # TOPICNAME: "/uav/mavros/vision_pose/pose" 
     SUBORPUB: 0
 
