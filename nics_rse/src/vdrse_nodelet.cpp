@@ -30,6 +30,7 @@ void nics::VdrseNodelet::onInit()
     ROS_CYAN_STREAM("STARTO!");
     ros::NodeHandle& nh = getMTNodeHandle();
     vdrselib_ptr = std::make_shared<VdrseLib>(getMTNodeHandle());
+    a = std::make_unique<int>(0);
     
     return;
 }

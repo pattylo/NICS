@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-dataset_name = "circle"
+dataset_name = "circle_dist"
 
 def process(filename1, filename2, no):
     # Read the CSV files, skipping the first line
@@ -100,7 +100,8 @@ def process(filename1, filename2, no):
     print(f'STD: {np.std(oe_abs) / np.pi * 180}')
     print(f'MAX: {np.max(oe_abs) / np.pi * 180}')
 
-files = ['A','B','C','D']
+# files = ['A','B','C','D']
+files = ['A','B','D']
 filenames = []
 
 for file in files:

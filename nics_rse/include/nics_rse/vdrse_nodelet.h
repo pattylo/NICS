@@ -39,6 +39,7 @@ namespace nics
         public:
         virtual void onInit();
         std::shared_ptr<VdrseLib> vdrselib_ptr;
+        std::unique_ptr<int> a;
     };
 
     PLUGINLIB_EXPORT_CLASS(nics::VdrseNodelet, nodelet::Nodelet)

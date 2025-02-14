@@ -48,6 +48,8 @@ class ctrl_server : private ros_utilities
 
 private:
     ros::NodeHandle nh;
+    std::unique_ptr<int> a;
+
 
 //ros related
     // subscriber

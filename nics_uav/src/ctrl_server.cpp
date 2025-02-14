@@ -28,6 +28,10 @@
 ctrl_server::ctrl_server(ros::NodeHandle& _nh)
 : nh(_nh), last_request(ros::Time::now().toSec())
 {
+    a = std::make_unique<int>(0);
+    std::cout<<*a<<std::endl;
+    std::cout<<"hi gannnn"<<std::endl;
+
     // subscribe
     uav_state_sub = nh.subscribe<mavros_msgs::State>
             ("/mavros/state", 1, &ctrl_server::uavStateCallback, this);

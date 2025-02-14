@@ -2,8 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-no = "D"
-dataset_name = "circle"
+no = "C"
+dataset_name = "hover_dist"
 
 
 # Read the CSV files, skipping the first line

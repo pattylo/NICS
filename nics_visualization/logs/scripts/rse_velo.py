@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import IsolationForest
 import numpy as np
 
-dataset_name = "circle"
+dataset_name = "circle_dist"
 
 def process(filename1, filename2, no):
     # Read the CSV files, skipping the first line
@@ -31,7 +31,7 @@ def process(filename1, filename2, no):
     # vy2 = remove_outliers_isolation_forest(vy2)
     # vz2 = remove_outliers_isolation_forest(vz2)
 
-    window_size = 4
+    window_size = 1
 
     # Apply the rolling mean to smooth the data
     vx1 = vx1.rolling(window=window_size).mean()
@@ -101,7 +101,8 @@ def process(filename1, filename2, no):
     print(f'STD: {np.std(ve_abs)}')
     print(f'MAX: {np.max(ve_abs)}')
 
-files = ['A','B','C','D']
+# files = ['A','B','C','D']
+files = ['A', 'B','D']
 filenames = []
 
 
@@ -118,28 +119,3 @@ for file in filenames:
     print()
 
 
-exit()
-
-# Compute RMSE for combined x, y, z
-xyz1 = np.vstack((vx1, vy1, vz1)).T
-xyz2 = np.vstack((vx2, vy2, vz2)).T
-rmse_xyz = np.sqrt(np.nanmean((xyz1 - xyz2)**2, axis=0)).mean()
-
-abs_diff_xyz = np.abs(xyz1 - xyz2)
-print(np.nanmean(abs_diff_xyz))
-# Combine the errors into a single array
-combined_errors = np.vstack((e_x, e_y, e_z)).T
-
-
-# Calculate the standard deviation of the combined errors
-std_combined_error = np.nanstd(combined_errors)
-
-# Output the standard deviation of the combined errors
-print(dataset_name + "_" + no)
-print(combined_errors.size)
-print(f"RMSE for combined x, y, z: {rmse_xyz}")
-print(f'Standard Deviation of the combined errors: {std_combined_error}')
-
-
-plt.tight_layout()
-plt.show()
